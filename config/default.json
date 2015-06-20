@@ -1,0 +1,10 @@
+{
+    "protocol": {
+        "name": "rpcc",
+        "port": 4321,
+        "txtRecord": {}
+    },
+    "browser": {
+        "url": "https://www.finanzcheck.de/"
+    }
+}
