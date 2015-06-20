@@ -1,3 +1,4 @@
+var Q = require('q');
 var os = require('os');
 var net = require('net');
 var mdns = require('mdns');
@@ -85,6 +86,11 @@ module.exports = {
     },
     stop: function () {
         server.close();
+    },
+    switchTV: function (state, which, callback) {
+
+    },
+    switchAllTV: function (state, callback) {
     },
     getClients: function () {
         return clients;
