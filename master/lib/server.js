@@ -10,14 +10,14 @@ var mdnsAd = mdns.createAdvertisement(mdns.tcp(protocolConfig.name), protocolCon
     txtRecord: protocolConfig.txtRecord,
     name: hostname
 });
-var clients = {};
+var clients = [];
 var server = net.createServer();
 var protocol = new Protocol({
     onGreeting: function (data, con) {
         var self = this;
 
         data.up = true;
-        clients[data.id] = data;
+        clients.push(data);
 
         con.write(self.GREETING + '!' + JSON.stringify({}));
 
