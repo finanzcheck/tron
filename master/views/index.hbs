@@ -1,18 +1,14 @@
-
 <div class="btn-group" data-toggle="buttons">
-  <label class="btn btn-danger active">
-    <input type="radio" name="options" id="option1" autocomplete="off"  data-tron="shutdown" checked> Shutdown TVs
-  </label>
-  <label class="btn btn-warning">
-    <input type="radio" name="options" id="option2" autocomplete="off" data-tron="emergency"> Alternative
-  </label>
-  <label class="btn btn-default">
-    <input type="radio" name="options" id="option3" autocomplete="off" data-tron="normal"> Normal
-  </label>
+    <button class="btn btn-danger active" data-tron="switchAllTV" data-tron-state="on">
+        switch TVs
+    </button>
+    <button class="btn btn-warning" data-tron="emergency" data-tron-state="off">
+        Alternative
+    </button>
 </div>
 <h1>Clients</h1>
 <ul>
-{{#eachInMap clients}}
-key:{{key}} value: {{value.id}}, {{value.url}}
-{{/eachInMap}}
+    {{#clients}}
+        <li>{{id}}, {{url}}</li>
+    {{/clients}}
 </ul>

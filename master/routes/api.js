@@ -4,7 +4,15 @@ var server;
 
 // middleware specific to this router
 router.get('/clients', function (req, res) {
-    res.json(server.getClients());
+    var clients = server.getClients();
+
+    res.json(clients);
+});
+
+router.get('/switchall', function (req, res) {
+    var clients = server.getClients();
+
+    res.json(clients);
 });
 
 module.exports = function (_server) {

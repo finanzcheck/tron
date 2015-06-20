@@ -10,14 +10,22 @@ var mdnsAd = mdns.createAdvertisement(mdns.tcp(protocolConfig.name), protocolCon
     txtRecord: protocolConfig.txtRecord,
     name: hostname
 });
-var clients = [];
+var Client = require('./client');
+var clients = new (require('./clientPool'))();
+
 var server = net.createServer();
 var protocol = new Protocol({
     onGreeting: function (data, con) {
         var self = this;
 
         data.up = true;
-        clients.push(data);
+
+        var client = clients.getClientById(data.id);
+
+        if(!client){
+            clients.push(new Client(data, con));
+        }
+
 
         con.write(self.GREETING + '!' + JSON.stringify({}));
 
@@ -87,10 +95,28 @@ module.exports = {
     stop: function () {
         server.close();
     },
+    changeUrl: function (){
+
+    },
     switchTV: function (state, which, callback) {
 
     },
-    switchAllTV: function (state, callback) {
+    switchAllTV: function (state) {
+
+        var clients = this.getClients().map(function (client) {
+            var deferred = Q.defer();
+            this.switchTV(state, client, function(error, response){
+                if(error){
+                    deferred.reject(new Error(error));
+                } else {
+                    deferred.resolve(response);
+                }
+            });
+            return deferred.promise;
+        });
+
+        return Q.all(clients);
+
     },
     getClients: function () {
         return clients;
