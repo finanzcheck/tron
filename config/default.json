@@ -1,6 +1,6 @@
 {
     "protocol": {
-        "name": "rpcc",
+        "name": "tron",
         "port": 4321,
         "txtRecord": {}
     },

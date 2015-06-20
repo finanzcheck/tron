@@ -1,27 +1,54 @@
-var net = require('net'),
-    mdns = require('mdns'),
-    config = require('config'),
-    Protocol = require('../../lib/protocol'),
-    protocolConfig = config.get('protocol'),
-    mdnsAd = mdns.createAdvertisement(mdns.tcp(protocolConfig.name), protocolConfig.port, {
-        txtRecord: protocolConfig.txtRecord,
-        name: 'mcp'
-    }),
-    clients = {},
-    server = net.createServer(),
-    protocol = new Protocol({
-        'onGreeting': function (data, con) {
-            con.write(this.GREETING);
-        },
-        'onReceipt': function (data, con) {
-        },
-        'onRequest': function (data, con) {
-        },
-        'onPassage': function (data, con) {
-        },
-        'onError': function (data, con) {
-        }
-    });
+var os = require('os');
+var net = require('net');
+var mdns = require('mdns');
+var config = require('config');
+var Protocol = require('../../lib/protocol');
+var protocolConfig = config.get('protocol');
+var hostname = os.hostname();
+var mdnsAd = mdns.createAdvertisement(mdns.tcp(protocolConfig.name), protocolConfig.port, {
+    txtRecord: protocolConfig.txtRecord,
+    name: hostname
+});
+var clients = {};
+var server = net.createServer();
+var protocol = new Protocol({
+    onGreeting: function (data, con) {
+        var self = this;
+
+        data.up = true;
+        clients[data.id] = data;
+
+        con.write(self.GREETING + '!' + JSON.stringify({}));
+
+        //// Testing navigateUrl action
+        //setInterval(function () {
+        //    con.write(self.REQUEST + '?' + JSON.stringify({
+        //        'action': 'navigateUrl',
+        //        'url': (function (urls) {
+        //            return urls[Math.floor(Math.random() * urls.length)];
+        //        })([
+        //            'https://www.google.de/',
+        //            'https://www.github.com/',
+        //            'https://www.heise.de/',
+        //            'https://www.apple.com/',
+        //            'https://www.finanzcheck.de/'
+        //        ])
+        //    }));
+        //}, 2500);
+    },
+    onReceipt: function (data, con) {
+        console.log('onReceipt', data);
+    },
+    onRequest: function (data, con) {
+        console.log('onRequest', data);
+    },
+    onPassage: function (data, con) {
+        console.log('onPassage', data);
+    },
+    onError: function (data, con) {
+        console.log('onError', data);
+    }
+});
 
 server.on('connection', function (c) {
     console.log('client connected');
