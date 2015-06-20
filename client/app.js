@@ -1,11 +1,13 @@
 var os = require('os');
 var net = require('net');
+var async = require('async');
 var client = new net.Socket();
 var interfaces = os.networkInterfaces();
 var chromeCtrl = require('chrome-remote-interface');
 var chromeInstance;
 var conf = require('config');
-// var wpi = require('wiring-pi');
+var gpio = require('./lib/gpio');
+
 // determine a mac address we may use to identify ourselves
 var macAddress = (function (interfaces) {
     var testInterfaces = ['eth0', 'en0', 'wlan0'],
@@ -74,15 +76,8 @@ var connect = function (service) {
 };
 var mdns = require('mdns');
 var mdnsBrowser = mdns.createBrowser(mdns.tcp(conf.protocol.name));
-var browserUrl = conf.browser.url;
+var browserUrl = conf.client.browser.url;
 var tvState;
-
-// setup chromeCtrl
-chromeCtrl(function (chrome) {
-    chromeInstance = chrome;
-}).on('error', function () {
-    console.error('Init chrome failed');
-});
 
 client.on('connect', function () {
     // introduce ourselves
@@ -116,4 +111,42 @@ mdnsBrowser.on('serviceUp', function (service) {
 mdnsBrowser.on('serviceDown', function (service) {
     // console.log('service down: ', service);
 });
-mdnsBrowser.start();
+
+// initializations
+async.waterfall([
+    // setup GPIO
+    function (next) {
+        gpio.setup(conf.client.io.tv, gpio.DIR_OUT, function (err) {
+            if (err) {
+                next(err);
+            }
+            else {
+                gpio.read(conf.client.io.tv, function (err, value) {
+                    if (!err) {
+                        tvState = !!value;
+                    }
+
+                    next(err);
+                });
+            }
+        });
+    },
+    // setup Chrome
+    function (next) {
+        chromeCtrl(function (chrome) {
+            chromeInstance = chrome;
+            next();
+        }).on('error', function () {
+            next('Init chrome failed');
+        });
+    },
+    // start mdns Browser
+    function (next) {
+        mdnsBrowser.start();
+        next();
+    }
+], function (err, result) {
+    if (err) {
+        console.log('Initialization failed due to raised error: ', err);
+    }
+});

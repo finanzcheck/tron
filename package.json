@@ -16,6 +16,7 @@
     "angular-animate": "^1.4.1",
     "angular-aria": "^1.4.1",
     "angular-material": "^0.10.0",
+    "async": "^1.2.1",
     "body-parser": "~1.12.4",
     "bootstrap": "^3.3.5",
     "browserify-middleware": "^6.0.0",
@@ -30,6 +31,7 @@
     "mdns": "^2.2.9",
     "morgan": "~1.5.3",
     "q": "^1.4.1",
+    "rpi-gpio": "^0.5.2",
     "serve-favicon": "~2.2.1"
   }
 }

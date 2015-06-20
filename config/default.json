@@ -4,7 +4,12 @@
         "port": 4321,
         "txtRecord": {}
     },
-    "browser": {
-        "url": "https://www.finanzcheck.de/"
+    "client": {
+        "browser": {
+            "url": "https://www.finanzcheck.de/"
+        },
+        "io": {
+            "tv": 11
+        }
     }
 }
