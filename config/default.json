@@ -1,15 +1,21 @@
 {
-    "protocol": {
-        "name": "tron",
-        "port": 4321,
-        "txtRecord": {}
+  "protocol": {
+    "name": "tron",
+    "port": 4321,
+    "txtRecord": {}
+  },
+  "client": {
+    "browser": {
+      "path": "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary",
+      "args": [
+        "--kiosk",
+        "--remote-debugging-port=9222",
+        "--user-data-dir=remote-profile"
+      ],
+      "url": "https://www.finanzcheck.de/"
     },
-    "client": {
-        "browser": {
-            "url": "https://www.finanzcheck.de/"
-        },
-        "io": {
-            "tv": 11
-        }
+    "io": {
+      "tv": 11
     }
+  }
 }

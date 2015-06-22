@@ -22,18 +22,17 @@ var protocol = new Protocol({
 
         var client = clients.getClientById(data.id);
 
-        if(!client){
+        if (!client) {
             clients.push(new Client(data, con));
         }
 
-
-        con.write(self.GREETING + '!' + JSON.stringify({}));
+        self.respond(self.GREETING, con);
 
         //// Testing navigateUrl action
         //setInterval(function () {
-        //    con.write(self.REQUEST + '?' + JSON.stringify({
-        //        'action': 'navigateUrl',
-        //        'url': (function (urls) {
+        //    self.ask(self.REQUEST, {
+        //        action: 'navigateUrl',
+        //        url: (function (urls) {
         //            return urls[Math.floor(Math.random() * urls.length)];
         //        })([
         //            'https://www.google.de/',
@@ -42,7 +41,7 @@ var protocol = new Protocol({
         //            'https://www.apple.com/',
         //            'https://www.finanzcheck.de/'
         //        ])
-        //    }));
+        //    }, con);
         //}, 2500);
     },
     onReceipt: function (data, con) {
@@ -95,7 +94,7 @@ module.exports = {
     stop: function () {
         server.close();
     },
-    changeUrl: function (){
+    changeUrl: function () {
 
     },
     switchTV: function (state, which, callback) {
@@ -105,10 +104,11 @@ module.exports = {
 
         var clients = this.getClients().map(function (client) {
             var deferred = Q.defer();
-            this.switchTV(state, client, function(error, response){
-                if(error){
+            this.switchTV(state, client, function (error, response) {
+                if (error) {
                     deferred.reject(new Error(error));
-                } else {
+                }
+                else {
                     deferred.resolve(response);
                 }
             });

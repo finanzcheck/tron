@@ -1,38 +1,21 @@
-var os = require('os');
 var net = require('net');
+var spawn = require('child_process').spawn;
 var async = require('async');
 var client = new net.Socket();
-var interfaces = os.networkInterfaces();
 var chromeCtrl = require('chrome-remote-interface');
 var chromeInstance;
 var conf = require('config');
+
+var clientState = {
+    browserUrl: conf.client.browser.url,
+    tvState: undefined
+};
+
 var gpio = require('./lib/gpio');
-
-// determine a mac address we may use to identify ourselves
-var macAddress = (function (interfaces) {
-    var testInterfaces = ['eth0', 'en0', 'wlan0'],
-        mac = undefined;
-
-    testInterfaces.forEach(function (name) {
-        var anInterface = interfaces[name];
-
-        if (anInterface) {
-            mac = anInterface[0].mac;
-        }
-    });
-
-    return mac || Object.keys(interfaces).reduce(function (carry, current) {
-            if (carry) {
-                return carry;
-            }
-            else {
-                return interfaces[current].reduce(function (carry, current) {
-                    return carry || true === current.internal ? undefined : current.mac;
-                }, undefined);
-            }
-        }, undefined);
-})(interfaces);
+var macAddress = require('./lib/macAddressResolver');
 var Protocol = require('../lib/protocol');
+var ServicePool = require('./lib/servicePool');
+
 var protocol = new Protocol({
     onGreeting: function (data, con) {
         // server acknowledged our existence
@@ -53,63 +36,61 @@ var protocol = new Protocol({
         navigateUrl: function (data, con) {
             var self = this;
 
+            clientState.browserUrl = data.url;
+
             if (chromeInstance) {
-                chromeInstance.Page.navigate({'url': data.url});
-                con.write(self.RECEIPT + '!' + JSON.stringify({}));
+                chromeInstance.Page.navigate({
+                    url: clientState.browserUrl
+                });
+
+                self.respond(self.RECEIPT, {
+                    token: data.token
+                }, con);
             }
             else {
-                con.write(self.ERROR + '!' + JSON.stringify({'message': 'Cannot connect to Chrome'}));
+                self.respond(self.ERROR, {
+                    token: data.token,
+                    message: 'Cannot connect to Chrome'
+                }, con);
             }
+        },
+        switchTV: function (data, con) {
+            var self = this;
+
+            clientState.tvState = data.state;
+
+            gpio.write(conf.client.io.tv, clientState.tvState, function (err) {
+                if (err) {
+                    self.respond(self.ERROR, {
+                        token: data.token,
+                        message: err
+                    }, con);
+                }
+                else {
+                    self.respond(self.RECEIPT, {
+                        token: data.token
+                    }, con);
+                }
+            });
         }
     }
 });
-var connected = false;
-var connect = function (service) {
-    if (!connected) {
-        connected = true;
-
-        client.connect({
-            port: service.port,
-            host: service.host
-        });
-    }
-};
 var mdns = require('mdns');
 var mdnsBrowser = mdns.createBrowser(mdns.tcp(conf.protocol.name));
-var browserUrl = conf.client.browser.url;
-var tvState;
+
+var services = new ServicePool(client, mdnsBrowser);
 
 client.on('connect', function () {
     // introduce ourselves
     client.write(protocol.GREETING + '!' + JSON.stringify({
-        'id': macAddress,
-        'tv': tvState,
-        'url': browserUrl
+        id: macAddress,
+        tv: clientState.tvState,
+        url: clientState.browserUrl
     }));
-});
-
-client.on('error', function () {
-    console.log(arguments);
 });
 
 client.on('data', function (data) {
     protocol.interpret(data, this);
-});
-
-client.on('end', function () {
-    connected = false;
-    console.log('disconnected from server');
-});
-
-mdnsBrowser.on('serviceUp', function (service) {
-    if (service.networkInterface) {
-        console.log('service discovered on ' + service.host + ' via interface ' + service.networkInterface);
-
-        connect(service);
-    }
-});
-mdnsBrowser.on('serviceDown', function (service) {
-    // console.log('service down: ', service);
 });
 
 // initializations
@@ -123,7 +104,7 @@ async.waterfall([
             else {
                 gpio.read(conf.client.io.tv, function (err, value) {
                     if (!err) {
-                        tvState = !!value;
+                        clientState.tvState = !!value;
                     }
 
                     next(err);
@@ -132,6 +113,20 @@ async.waterfall([
         });
     },
     // setup Chrome
+    function (next) {
+        var chrome = spawn(conf.client.browser.path, conf.client.browser.args);
+
+        chrome.on('error', function (err) {
+            next(err);
+        });
+        chrome.on('close', function (code) {
+            console.log('child process exited with code ' + code);
+        });
+
+        // wait to let chrome start gracefully
+        setTimeout(next, 10000);
+    },
+    // setup Chrome Protocol
     function (next) {
         chromeCtrl(function (chrome) {
             chromeInstance = chrome;
@@ -142,11 +137,12 @@ async.waterfall([
     },
     // start mdns Browser
     function (next) {
-        mdnsBrowser.start();
+        services.start();
         next();
     }
-], function (err, result) {
+], function (err) {
     if (err) {
         console.log('Initialization failed due to raised error: ', err);
+        process.exit(1);
     }
 });
