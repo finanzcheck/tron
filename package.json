@@ -11,7 +11,7 @@
     "master:dev": "export NODE_ENV=development; ./master/bin/www",
     "client": "node ./client/app.js",
     "build": "staticr ./master/public ./master/static-routes/browserify.js ./master/static-routes/less.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/.bin/mocha test/"
   },
   "dependencies": {
     "array.prototype.find": "^1.0.0",
@@ -39,10 +39,12 @@
     "autoprefixer-core": "^5.2.1",
     "bootstrap": "^3.3.5",
     "browserify": "^10.2.4",
+    "chai": "^3.0.0",
     "clean-css": "^3.3.4",
     "font-awesome": "^4.3.0",
     "jquery": "^2.1.4",
     "less": "^2.5.1",
+    "mocha": "^2.2.5",
     "postcss": "^4.1.13",
     "staticr": "^2.1.3",
     "socket.io-client": "^1.3.5",
