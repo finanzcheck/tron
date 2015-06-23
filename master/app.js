@@ -1,5 +1,4 @@
 var express = require('express');
-var http = require('http');
 var hbs = require('hbs');
 var browserify = require('browserify-middleware');
 var path = require('path');
@@ -15,7 +14,6 @@ var api = require('./routes/api')(server);
 var clients = require('./routes/clients');
 
 var app = express();
-var httpServer = http.createServer(app);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
@@ -96,6 +94,13 @@ app.use(function (err, req, res, next) {
 
 server.start();
 
-httpServer.listen(3000);
-console.log('Express server started on port %s', httpServer.address().port);
+var appServer = app.listen(3000, function () {
+
+  var host = appServer.address().address;
+  var port = appServer.address().port;
+
+  console.log('Example app listening at http://%s:%s', host, port);
+
+});
+
 module.exports = app;
