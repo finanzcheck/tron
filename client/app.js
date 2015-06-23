@@ -124,7 +124,7 @@ async.waterfall([
         });
 
         // wait to let chrome start gracefully
-        setTimeout(next, 10000);
+        setTimeout(next, conf.client.browser.startupGracePeriod);
     },
     // setup Chrome Protocol
     function (next) {
