@@ -94,13 +94,4 @@ app.use(function (err, req, res, next) {
 
 server.start();
 
-var appServer = app.listen(3000, function () {
-
-  var host = appServer.address().address;
-  var port = appServer.address().port;
-
-  console.log('Example app listening at http://%s:%s', host, port);
-
-});
-
 module.exports = app;

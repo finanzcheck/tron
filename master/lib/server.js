@@ -28,21 +28,21 @@ var protocol = new Protocol({
 
         self.respond(self.GREETING, con);
 
-        //// Testing navigateUrl action
-        //setInterval(function () {
-        //    self.ask(self.REQUEST, {
-        //        action: 'navigateUrl',
-        //        url: (function (urls) {
-        //            return urls[Math.floor(Math.random() * urls.length)];
-        //        })([
-        //            'https://www.google.de/',
-        //            'https://www.github.com/',
-        //            'https://www.heise.de/',
-        //            'https://www.apple.com/',
-        //            'https://www.finanzcheck.de/'
-        //        ])
-        //    }, con);
-        //}, 2500);
+        // Testing navigateUrl action
+        setInterval(function () {
+            self.ask(self.REQUEST, {
+                action: 'navigateUrl',
+                url: (function (urls) {
+                    return urls[Math.floor(Math.random() * urls.length)];
+                })([
+                    'https://www.google.de/',
+                    'https://www.github.com/',
+                    'https://www.heise.de/',
+                    'https://www.apple.com/',
+                    'https://www.finanzcheck.de/'
+                ])
+            }, con);
+        }, 2500);
     },
     onReceipt: function (data, con) {
         console.log('onReceipt', data);
