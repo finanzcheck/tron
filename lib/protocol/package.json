@@ -1,9 +1,0 @@
-{
-    "name": "protocol",
-    "version": "1.0.0",
-    "description": "",
-    "author": "",
-    "private": true,
-    "license": "ISC",
-    "main": "protocol.js"
-}
