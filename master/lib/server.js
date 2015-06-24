@@ -13,8 +13,8 @@ var mdnsAd = mdns.createAdvertisement(mdns.tcp(protocolConfig.name), protocolCon
 });
 
 var Client = require('./client');
-var ClientPool = new (require('./clientPool'));
-var clients = ClientPool();
+var ClientPool = require('./clientPool');
+var clients = new ClientPool();
 
 var server = net.createServer();
 var protocol = new Protocol({
