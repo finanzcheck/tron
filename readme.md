@@ -12,6 +12,7 @@ client is a tv.
 ###switch client off/on
 - client receives to switch off/on
 - UI-state is pending
+- server emit client pending immediately
 - server emit client update
 
 ###switch all client off/on
@@ -21,6 +22,7 @@ client is a tv.
 ###change url on client
 - client receive to change url
 - UI-state is pending
+- server emit client pending immediately
 - server emit client update
 
 
@@ -41,6 +43,10 @@ change complete UI to pending
 ###updateClient => client-id, state
 receive client-id and state of client
 when client is new client will append to list
+
+###pendingClient => client-id
+receive client-id 
+change UI-state to pending
 
 ###clients => clients
 receive list of clients
