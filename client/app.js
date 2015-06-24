@@ -43,12 +43,12 @@ var protocol = new Protocol({
                     url: clientState.browserUrl
                 });
 
-                self.respond(self.RECEIPT, {
+                self.respond({
                     token: data.token
                 }, con);
             }
             else {
-                self.respond(self.ERROR, {
+                self.sendResponse(self.ERROR, {
                     token: data.token,
                     message: 'Cannot connect to Chrome'
                 }, con);
@@ -61,13 +61,13 @@ var protocol = new Protocol({
 
             gpio.write(conf.client.io.tv, clientState.tvState, function (err) {
                 if (err) {
-                    self.respond(self.ERROR, {
+                    self.sendResponse(self.ERROR, {
                         token: data.token,
                         message: err
                     }, con);
                 }
                 else {
-                    self.respond(self.RECEIPT, {
+                    self.respond({
                         token: data.token
                     }, con);
                 }
@@ -82,11 +82,11 @@ var services = new ServicePool(client, mdnsBrowser);
 
 client.on('connect', function () {
     // introduce ourselves
-    client.write(protocol.GREETING + '!' + JSON.stringify({
+    protocol.greet({
         id: macAddress,
         tv: clientState.tvState,
         url: clientState.browserUrl
-    }));
+    }, this);
 });
 
 client.on('data', function (data) {

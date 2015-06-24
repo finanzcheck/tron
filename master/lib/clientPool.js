@@ -1,16 +1,18 @@
 var util = require('util');
 var Client = require('./client');
 
+require('array.prototype.find');
+
 function ClientPool() {
 
 }
 
 util.inherits(ClientPool, Array);
 
-ClientPool.prototype.getClientById = function (id) {
-    return this.filter(function (client) {
+ClientPool.prototype.getById = function (id) {
+    return this.find(function (client) {
         return client.id == id;
-    })[0];
+    });
 };
 
 ClientPool.prototype.getArrayCopy = function () {
