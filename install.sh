@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-IOJS_VERSION=2.3.1
+IOJS_VERSION=2.3.0
 
 unamestr=$(uname)
 if [[ "$unamestr" == 'Linux' ]]; then
