@@ -100,24 +100,6 @@ module.exports = {
     switchTV: function (state, which, callback) {
 
     },
-    switchAllTV: function (state) {
-
-        var clients = this.getClients().map(function (client) {
-            var deferred = Q.defer();
-            this.switchTV(state, client, function (error, response) {
-                if (error) {
-                    deferred.reject(new Error(error));
-                }
-                else {
-                    deferred.resolve(response);
-                }
-            });
-            return deferred.promise;
-        });
-
-        return Q.all(clients);
-
-    },
     getClients: function () {
         return clients;
     }
