@@ -1,33 +1,37 @@
-
-
+var serverService = require('./server');
+var socketEvents = require('./socketEvents');
+var debug = require('debug');
 //socket.io connection
 var socket;
-
-function MockSocket() {
-}
-
-MockSocket.prototype.on = function () {
-};
-
-MockSocket.prototype.emit = function () {
-};
 
 function Socket(server) {
     // create connection;
     if (server && null == socket) {
         var io = require('socket.io')(server);
         io.on('connection', function (_socket) {
-            _socket.emit('news', {hello: 'world'});
-            _socket.on('my other event', function (data) {
-                console.log(data);
+
+            _socket.on(socketEvents.CLIENTS_GET, function (data) {
+                serverService.getClients(function (err, clients) {
+                    _socket.emit(socketEvents.CLIENTS_LIST, clients);
+                });
             });
+
+            _socket.on(socketEvents.CLIENT_SWITCH, function (data) {
+                _socket.emit(socketEvents.CLIENT_PENDING, data.client);
+                console.log(data);
+                serverService.switchTV(data.state, data.client, function (err, _state, _client) {
+                    _socket.emit(socketEvents.CLIENT_UPDATE, {state: _state, id: _client});
+                })
+            });
+
+            _socket.on(socketEvents.CLIENT_CHANGEURL, function (data) {
+                debug('master:socket', [socketEvents.CLIENT_CHANGEURL, data]);
+                _socket.emit(socketEvents.CLIENT_PENDING, data.client);
+            });
+
 
             socket = _socket;
         });
-    } else if (null == socket) {
-        return new MockSocket();
-    } else {
-        return socket;
     }
 }
 

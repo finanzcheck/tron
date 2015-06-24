@@ -1,4 +1,5 @@
 var util = require('util');
+var Client = require('./client');
 
 function ClientPool() {
 
@@ -14,6 +15,14 @@ ClientPool.prototype.getClientById = function (id) {
 
 ClientPool.prototype.getArrayCopy = function () {
     return this.slice();
+};
+
+ClientPool.fromArray = function (clients) {
+    var clientPool = new ClientPool();
+    clients.forEach(function (client) {
+        clientPool.push(new Client(client));
+    });
+    return clientPool;
 };
 
 module.exports = ClientPool;

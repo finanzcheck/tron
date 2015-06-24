@@ -4,7 +4,7 @@ var server;
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    res.render('index', {title: 'Express', clients: server.getClients().getArrayCopy()});
+    res.render('index', {title: 'TRON', clients: []});
 });
 
 module.exports = function (_server) {

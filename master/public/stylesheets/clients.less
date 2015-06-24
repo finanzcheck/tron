@@ -1,0 +1,59 @@
+.clients {
+  ul&, ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  &-list-item {
+    text-decoration: none;
+    font-size: 22px;
+    display: block;
+    border: 1px solid;
+    border-radius: 3px;
+
+    margin: 20px 0;
+    padding: 15px;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    span {
+      display: inline-flex;
+      flex-direction: column;
+    }
+  }
+}
+
+.client {
+  display: flex;
+  flex-direction: row;
+  &-state {
+    display: inline-block;
+    text-decoration: none;
+    margin-right: 15px;
+    color: grey;
+    &:before {
+      content: @fa-var-circle-o;
+    }
+
+    &-pending {
+      color: grey;
+      &:before {
+        content: @fa-var-meh-o;
+      }
+    }
+    &-on {
+      color: green;
+      &:before {
+        content: @fa-var-smile-o;
+      }
+    }
+    &-off {
+      color: red;
+      &:before {
+        content: @fa-var-frown-o;
+      }
+    }
+  }
+}

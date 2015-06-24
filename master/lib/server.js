@@ -29,20 +29,20 @@ var protocol = new Protocol({
         self.respond(self.GREETING, con);
 
         // Testing navigateUrl action
-        setInterval(function () {
-            self.ask(self.REQUEST, {
-                action: 'navigateUrl',
-                url: (function (urls) {
-                    return urls[Math.floor(Math.random() * urls.length)];
-                })([
-                    'https://www.google.de/',
-                    'https://www.github.com/',
-                    'https://www.heise.de/',
-                    'https://www.apple.com/',
-                    'https://www.finanzcheck.de/'
-                ])
-            }, con);
-        }, 2500);
+        //setInterval(function () {
+        //    self.ask(self.REQUEST, {
+        //        action: 'navigateUrl',
+        //        url: (function (urls) {
+        //            return urls[Math.floor(Math.random() * urls.length)];
+        //        })([
+        //            'https://www.google.de/',
+        //            'https://www.github.com/',
+        //            'https://www.heise.de/',
+        //            'https://www.apple.com/',
+        //            'https://www.finanzcheck.de/'
+        //        ])
+        //    }, con);
+        //}, 2500);
     },
     onReceipt: function (data, con) {
         console.log('onReceipt', data);
@@ -96,11 +96,15 @@ module.exports = {
     },
     changeUrl: function (url, which, callback) {
         var err = false;
-        callback(err, which);
+        setTimeout(function(){
+            callback(err, which);
+        }, 3000);
     },
     switchTV: function (state, which, callback) {
         var err = false;
-        callback(err, state, which);
+        setTimeout(function(){
+            callback(err, state, which);
+        }, 3000);
     },
     getClients: function (callback) {
         var err = false;
