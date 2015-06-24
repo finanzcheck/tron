@@ -29,7 +29,7 @@ var protocol = new Protocol({
             clients.push(new Client(data, con));
         }
 
-        self.greetBack(con);
+        self.greetBack({token: data.token}, con);
 
         // // Testing navigateUrl action
         // setInterval(function () {
@@ -105,7 +105,7 @@ module.exports = {
         var client = this.getClient(which);
 
         if (client) {
-            protocol.requestNavigateUrl(url, client.socket, cb);
+            protocol.requestNavigateUrl(url, client.socket, callback);
         }
         else {
             callback(new Error('Client not found!'));
@@ -120,7 +120,7 @@ module.exports = {
         var client = this.getClient(which);
 
         if (client) {
-            protocol.requestSwitchTV(state, client.socket, cb);
+            protocol.requestSwitchTV(state, client.socket, callback);
         }
         else {
             callback(new Error('Client not found!'));

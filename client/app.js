@@ -48,7 +48,7 @@ var protocol = new Protocol({
                 }, con);
             }
             else {
-                self.sendResponse(self.ERROR, {
+                self.error({
                     token: data.token,
                     message: 'Cannot connect to Chrome'
                 }, con);
@@ -61,7 +61,7 @@ var protocol = new Protocol({
 
             gpio.write(conf.client.io.tv, clientState.tvState, function (err) {
                 if (err) {
-                    self.sendResponse(self.ERROR, {
+                    self.error({
                         token: data.token,
                         message: err
                     }, con);
@@ -86,7 +86,7 @@ client.on('connect', function () {
         id: macAddress,
         tv: clientState.tvState,
         url: clientState.browserUrl
-    }, this);
+    });
 });
 
 client.on('data', function (data) {
