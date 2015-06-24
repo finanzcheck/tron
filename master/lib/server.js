@@ -94,13 +94,16 @@ module.exports = {
     stop: function () {
         server.close();
     },
-    changeUrl: function () {
-
+    changeUrl: function (url, which, callback) {
+        var err = false;
+        callback(err, which);
     },
     switchTV: function (state, which, callback) {
-
+        var err = false;
+        callback(err, state, which);
     },
-    getClients: function () {
-        return clients;
+    getClients: function (callback) {
+        var err = false;
+        callback(err, clients);
     }
 };
