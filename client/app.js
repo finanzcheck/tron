@@ -122,7 +122,8 @@ async.waterfall([
     },
     // setup Chrome
     function (next) {
-        var chrome = spawn(conf.client.browser.path, conf.client.browser.args);
+        var args = conf.client.browser.args.concat([conf.client.browser.url]);
+        var chrome = spawn(conf.client.browser.path, args);
 
         chrome.on('error', function (err) {
             next(err);

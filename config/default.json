@@ -10,6 +10,7 @@
       "startupGracePeriod": 10000,
       "args": [
         "--kiosk",
+        "--disable-translate",
         "--remote-debugging-port=9222",
         "--user-data-dir=remote-profile"
       ],
