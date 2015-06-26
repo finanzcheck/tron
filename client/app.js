@@ -86,7 +86,7 @@ client.on('connect', function () {
         id: macAddress,
         tv: clientState.tvState,
         url: clientState.browserUrl
-    });
+    }, this);
 });
 
 client.on('data', function (data) {
