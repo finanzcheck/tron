@@ -89,10 +89,8 @@ $(function () {
                     });
                     break;
                 case 'switch-all':
-                    console.debug('onclienthello()', $this.data('type'));
                     $('.client').each(function (client) {
                         var id = this.id;
-                        console.debug(this);
                         socket.emit(socketEvents.CLIENT_SWITCH, {
                             client: id,
                             state: $this.data('type') == 'on'
