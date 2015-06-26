@@ -59,7 +59,7 @@ $(function () {
     }
 
     socket.on(socketEvents.CLIENTS_LIST, function (clients) {
-        clientPool = ClientPool.fromArray($.makeArray(clients));
+        clientPool = ClientPool.fromArray(clients);
         makeList(clientPool);
     });
 
@@ -68,6 +68,8 @@ $(function () {
     });
 
     socket.on(socketEvents.CLIENT_UPDATE, function (data) {
+        console.debug(arguments);
+
         var $client = getClient(data.id);
         setState($client, data.state ? 'on' : 'off');
     });

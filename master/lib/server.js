@@ -112,6 +112,23 @@ module.exports = {
         }
     },
     /**
+     * @param {String}   title
+     * @param {String}   which
+     * @param {Function} callback
+     */
+    changeTitle: function (title, which, callback) {
+        var client = this.getClient(which);
+
+        if (client) {
+            client.title = title;
+
+            cb(null);
+        }
+        else {
+            callback(new Error('Client not found!'));
+        }
+    },
+    /**
      * @param {Boolean|Number} state
      * @param {String}         which
      * @param {Function}       callback
