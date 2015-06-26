@@ -15,6 +15,10 @@ var clientState = {
     OFF: 'client-state-off'
 };
 
+function getClient(str) {
+    return $('[client="' + str + '"]');
+}
+
 function getClientFromAction($action) {
     return $action.parents('.client').first();
 }
@@ -42,7 +46,7 @@ function setState($client, state) {
 function makeList(_clientPool) {
     var list = '';
     _clientPool.forEach(function (client) {
-        list += '<li class="clients-list-item client" id="' + client.id + '"><a data-action="switch" href="" class="client-state btn"><i class="fa fa-3x fa-fw fa-power-off"></i></a><span><input class="form-control client-title" name="title" data-event="' + socketEvents.CLIENT_CHANGETITLE + '" type="text" value="' + client.id + '" /><input type="text" class="form-control client-url" data-event="' + socketEvents.CLIENT_CHANGEURL + '" name="url" value="' + client.url + '" /></span></li>'
+        list += '<li class="clients-list-item client" client="' + client.id + '"><a data-action="switch" href="" class="client-state btn"><i class="fa fa-3x fa-fw fa-power-off"></i></a><span><input class="form-control client-title" name="title" data-event="' + socketEvents.CLIENT_CHANGETITLE + '" type="text" value="' + client.id + '" /><input type="text" class="form-control client-url" data-event="' + socketEvents.CLIENT_CHANGEURL + '" name="url" value="' + client.url + '" /></span></li>'
     });
 
     $('.js-clients').append(list);
@@ -60,11 +64,11 @@ $(function () {
     });
 
     socket.on(socketEvents.CLIENT_PENDING, function (client) {
-        setState($('#' + client), 'pending');
+        setState(getClient(client), 'pending');
     });
 
     socket.on(socketEvents.CLIENT_UPDATE, function (data) {
-        var $client = $('#' + data.id);
+        var $client = getClient(data.id);
         setState($client, data.state ? 'on' : 'off');
     });
 
@@ -84,13 +88,13 @@ $(function () {
             switch ($this.data('action')) {
                 case 'switch':
                     socket.emit(socketEvents.CLIENT_SWITCH, {
-                        client: $client[0].id,
+                        client: $client.attr('client'),
                         state: $clientState.hasClass(clientState.OFF)
                     });
                     break;
                 case 'switch-all':
                     $('.client').each(function (client) {
-                        var id = this.id;
+                        var id = $(this).attr('client');
                         socket.emit(socketEvents.CLIENT_SWITCH, {
                             client: id,
                             state: $this.data('type') == 'on'
@@ -121,7 +125,7 @@ $(function () {
                     return;
                 }
                 socket.emit($this.data('event'), {
-                    client: $client[0].id,
+                    client: $client.attr('client'),
                     url: value
                 });
 
