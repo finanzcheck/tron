@@ -1,10 +1,18 @@
 var net = require('net');
+var mdns = require('mdns');
 var spawn = require('child_process').spawn;
 var async = require('async');
 var client = new net.Socket();
 var chromeCtrl = require('chrome-remote-interface');
 var chromeInstance;
 var conf = require('config');
+// raspbians mdns implementation fails
+// at resolving ipv6 addresses…what a bummer
+var resolverSequence = [
+    mdns.rst.DNSServiceResolve(),
+    'DNSServiceGetAddrInfo' in mdns.dns_sd ? mdns.rst.DNSServiceGetAddrInfo() : mdns.rst.getaddrinfo({families: [4]}),
+    mdns.rst.makeAddressesUnique()
+];
 
 var clientState = {
     browserUrl: conf.client.browser.url,
@@ -75,8 +83,8 @@ var protocol = new Protocol({
         }
     }
 });
-var mdns = require('mdns');
-var mdnsBrowser = mdns.createBrowser(mdns.tcp(conf.protocol.name));
+
+var mdnsBrowser = mdns.createBrowser(mdns.tcp(conf.protocol.name), {resolverSequence: resolverSequence});
 
 var services = new ServicePool(client, mdnsBrowser);
 
