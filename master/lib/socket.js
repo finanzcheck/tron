@@ -11,9 +11,7 @@ function Socket(server) {
         io.on('connection', function (_socket) {
 
             _socket.on(socketEvents.CLIENTS_GET, function (data) {
-                serverService.getClients(function (err, clients) {
-                    _socket.emit(socketEvents.CLIENTS_LIST, clients);
-                });
+                _socket.emit(socketEvents.CLIENTS_LIST, serverService.getClients());
             });
 
             _socket.on(socketEvents.CLIENT_SWITCH, function (data) {

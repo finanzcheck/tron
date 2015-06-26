@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
-IOJS_VERSION=2.3.1
+IOJS_VERSION=2.3.0
 
 unamestr=$(uname)
 if [[ "$unamestr" == 'Linux' ]]; then
     sudo apt-get update
     sudo apt-get upgrade -y
-    sudo apt-get install -y libcec-dev cec-utils
+    sudo apt-get install -y libcec-dev cec-utils libavahi-compat-libdnssd-dev
+    # chromium environment
+    sudo apt-get install -y matchbox chromium x11-xserver-utils ttf-mscorefonts-installer xwit sqlite3 libnss3
 
     if hash node 2>/dev/null; then
         echo "node found"
@@ -41,3 +43,5 @@ elif [[ "$unamestr" == 'Darwin' ]]; then
         brew install iojs
     fi
 fi
+
+npm install

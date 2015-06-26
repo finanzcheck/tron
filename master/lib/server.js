@@ -3,6 +3,7 @@ var os = require('os');
 var net = require('net');
 var mdns = require('mdns');
 var config = require('config');
+var noop = require('../../lib/noop');
 var Protocol = require('../../lib/protocol');
 var protocolConfig = config.get('protocol');
 var hostname = os.hostname();
@@ -10,8 +11,10 @@ var mdnsAd = mdns.createAdvertisement(mdns.tcp(protocolConfig.name), protocolCon
     txtRecord: protocolConfig.txtRecord,
     name: hostname
 });
+
 var Client = require('./client');
-var clients = new (require('./clientPool'))();
+var ClientPool = require('./clientPool');
+var clients = new ClientPool();
 
 var server = net.createServer();
 var protocol = new Protocol({
@@ -20,29 +23,28 @@ var protocol = new Protocol({
 
         data.up = true;
 
-        var client = clients.getClientById(data.id);
+        var client = clients.getById(data.id);
 
         if (!client) {
             clients.push(new Client(data, con));
         }
 
-        self.respond(self.GREETING, con);
+        self.greetBack({token: data.token}, con);
 
-        // Testing navigateUrl action
-        //setInterval(function () {
-        //    self.ask(self.REQUEST, {
-        //        action: 'navigateUrl',
-        //        url: (function (urls) {
-        //            return urls[Math.floor(Math.random() * urls.length)];
-        //        })([
-        //            'https://www.google.de/',
-        //            'https://www.github.com/',
-        //            'https://www.heise.de/',
-        //            'https://www.apple.com/',
-        //            'https://www.finanzcheck.de/'
-        //        ])
-        //    }, con);
-        //}, 2500);
+        // // Testing navigateUrl action
+        // setInterval(function () {
+        //     self.requestNavigateUrl((function (urls) {
+        //         return urls[Math.floor(Math.random() * urls.length)];
+        //     })([
+        //         'https://www.google.de/',
+        //         'https://www.github.com/',
+        //         'https://www.heise.de/',
+        //         'https://www.apple.com/',
+        //         'https://www.finanzcheck.de/'
+        //     ]), con, function () {
+        //         console.log(arguments);
+        //     });
+        // }, 2500);
     },
     onReceipt: function (data, con) {
         console.log('onReceipt', data);
@@ -88,26 +90,46 @@ server.on('error', function (e) {
 });
 
 module.exports = {
-    start: function () {
-        server.listen(protocolConfig.port);
+    start: function (cb) {
+        server.listen(protocolConfig.port, cb || noop);
     },
-    stop: function () {
-        server.close();
+    stop: function (cb) {
+        server.close(cb || noop);
     },
+    /**
+     * @param {String}   url
+     * @param {String}   which
+     * @param {Function} callback
+     */
     changeUrl: function (url, which, callback) {
-        var err = false;
-        setTimeout(function(){
-            callback(err, which);
-        }, 3000);
+        var client = this.getClient(which);
+
+        if (client) {
+            protocol.requestNavigateUrl(url, client.socket, callback);
+        }
+        else {
+            callback(new Error('Client not found!'));
+        }
     },
+    /**
+     * @param {Boolean|Number} state
+     * @param {String}         which
+     * @param {Function}       callback
+     */
     switchTV: function (state, which, callback) {
-        var err = false;
-        setTimeout(function(){
-            callback(err, state, which);
-        }, 3000);
+        var client = this.getClient(which);
+
+        if (client) {
+            protocol.requestSwitchTV(state, client.socket, callback);
+        }
+        else {
+            callback(new Error('Client not found!'));
+        }
     },
-    getClients: function (callback) {
-        var err = false;
-        callback(err, clients);
+    getClient: function (id) {
+        return clients.getById(id);
+    },
+    getClients: function () {
+        return clients;
     }
 };
