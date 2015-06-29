@@ -5,5 +5,6 @@ module.exports = {
     CLIENT_PENDING: 'client:pending',
     CLIENT_UPDATE: 'client:update',
     CLIENT_CHANGEURL: 'client:changeurl',
-    CLIENT_CHANGETITLE: 'client:changetitle'
+    CLIENT_CHANGETITLE: 'client:changetitle',
+    ERROR: 'error'
 };

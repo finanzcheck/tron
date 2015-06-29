@@ -12,7 +12,8 @@ var clientPool;
 var clientState = {
     PENDING: 'client-state-pending active',
     ON: 'client-state-on',
-    OFF: 'client-state-off'
+    OFF: 'client-state-off',
+    ERROR: 'client-state-error'
 };
 
 function getClient(str) {
@@ -46,7 +47,7 @@ function setState($client, state) {
 function makeList(_clientPool) {
     var list = '';
     _clientPool.forEach(function (client) {
-        list += '<li class="clients-list-item client" client="' + client.id + '"><a data-action="switch" href="" class="client-state btn"><i class="fa fa-3x fa-fw fa-power-off"></i></a><span><input class="form-control client-title" name="title" data-event="' + socketEvents.CLIENT_CHANGETITLE + '" type="text" value="' + client.title + '" /><input type="text" class="form-control client-url" data-event="' + socketEvents.CLIENT_CHANGEURL + '" name="url" value="' + client.url + '" /></span></li>'
+        list += '<li class="clients-list-item client" client="' + client.id + '"><a data-action="switch" href="" class="client-state btn"><i class="fa fa-3x fa-fw fa-power-off"></i></a><span><input class="form-control client-title" name="title" data-event="' + socketEvents.CLIENT_CHANGETITLE + '" type="text" value="' + client.title + '" /><input type="text" class="form-control client-url" data-event="' + socketEvents.CLIENT_CHANGEURL + '" name="url" value="' + client.url + '" /></span><span class="client-id">' + client.id + '</span></li>'
     });
 
     $('.js-clients').append(list);
@@ -68,6 +69,11 @@ $(function () {
     });
 
     socket.on(socketEvents.CLIENT_UPDATE, function (data) {
+        var $client = getClient(data.id);
+        setState($client, data.state ? 'on' : 'off');
+    });
+
+    socket.on(socketEvents.ERROR, function (data) {
         var $client = getClient(data.id);
         setState($client, data.state ? 'on' : 'off');
     });
