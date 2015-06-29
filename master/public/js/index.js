@@ -3,6 +3,9 @@ var ClientPool = require('../../lib/clientPool');
 global.jQuery = require('jquery');
 var $ = jQuery;
 
+require('bootstrap/js/transition');
+require('bootstrap/js/collapse');
+
 var full = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
 global.socket = require('socket.io-client')(full);
 
@@ -117,7 +120,6 @@ $(function () {
             var $client = getClientFromAction($this);
             var value = this.value;
 
-
             if (event.type == 'keyup') {
                 if (event.keyCode == 13) {
                     $this.blur();
@@ -130,15 +132,29 @@ $(function () {
                     $this.data('value', '');
                     return;
                 }
-                socket.emit($this.data('event'), {
-                    client: $client.attr('client'),
-                    url: value
-                });
+
+                if ($this.data('event') == 'client:changeurl-all') {
+                    $(event.target).parents('.clients').first().find('input[data-event="' + socketEvents.CLIENT_CHANGEURL + '"]').each(function(){
+                        this.value = value;
+                        $(this).trigger('blur');
+                    });
+
+                    $(event.target).parents('.clients').first().find('.js-button-changeurl-all').trigger('click');
+
+                } else {
+                    socket.emit($this.data('event'), {
+                        client: $client.attr('client'),
+                        url: value
+                    });
+                }
 
             }
 
 
         })
+        .on('show.bs.collapse hidden.bs.collapse', function (event) {
+            $(event.target).parents('.clients').first().find('.js-button-changeurl-all').toggleClass('active', event.type == 'show');
+        });
 
 
 });
