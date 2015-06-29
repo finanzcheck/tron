@@ -10,7 +10,7 @@ function Client(data, socket) {
     this.id = data.id;
     this.socket = socket;
     this.url = data.url;
-    this.title = data.title;
+    this.title = data.title || data.id;
 }
 
 Client.prototype.toJSON = function () {
