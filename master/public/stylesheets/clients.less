@@ -1,3 +1,20 @@
+.heading {
+  h1, .h3 {
+    margin: 0;
+  }
+
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  .pull-right {
+    align-self: flex-end;
+  }
+
+}
+
 .clients {
   display: flex;
   flex-direction: column;
@@ -18,6 +35,28 @@
     margin: 0;
     list-style: none;
   }
+
+  &-main {
+    margin-bottom: 15px;
+  }
+
+  &-waiting {
+    display: none;
+    align-items: center;
+
+    span {
+      font-size: 22px;
+      margin-left: .7em;
+    }
+
+    &.active {
+      display: flex;
+      ~ .clients {
+        display: none;
+      }
+    }
+  }
+
   &-list-item {
     .well;
     text-decoration: none;
@@ -27,6 +66,11 @@
     & + & {
       margin: @panel-body-padding 0 0;
     }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
     padding: 15px;
 
     white-space: nowrap;

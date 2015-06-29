@@ -1,22 +1,44 @@
-<section class="panel panel-default clients">
-    <div class="panel-heading"><span class="h3">Clients</span>
+<section class="clients-waiting active"><i class="fa fa-cog fa-spin fa-2x"></i> <span>Waiting for Clients…</span></section>
+<section class="clients">
+    <header class="clients-main">
+        <div class="heading">
+            <h1 class="pull-left">Clients</h1>
 
-        <div class="pull-right">
-            <div class="btn-group">
-                <button type="button" data-action="switch-all" data-type="off" class="btn btn-sm client-state-off"><i class="fa fa-lg fa-fw fa-power-off"></i></button>
-                <button type="button" data-action="switch-all" data-type="on" class="btn btn-sm client-state-on"><i class="fa fa-lg fa-fw fa-power-off"></i></button>
+            <div class="pull-right">
+                <div class="btn-group">
+                    <button type="button" data-action="switch-all" data-type="off" class="btn btn-lg client-state-off"><i class="fa fa-lg fa-fw fa-power-off"></i></button>
+                    <button type="button" data-action="switch-all" data-type="on" class="btn btn-lg client-state-on"><i class="fa fa-lg fa-fw fa-power-off"></i></button>
+                </div>
+                <button type="button" class="btn btn-lg btn-default js-button-changeurl-all" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample"><b>Change Url</b></button>
             </div>
-            <button type="button" class="btn btn-sm btn-default js-button-changeurl-all" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample"><b>Change Url</b></button>
         </div>
-
         <div class="clients-heading-url-wrapper collapse" id="collapseExample">
             <div class="clients-heading-url"><input class="form-control" data-event="client:changeurl-all" name="url" value="" type="text"></div>
         </div>
-    </div>
-    <div class="panel-body">
-        <ul class="clients-list js-clients">
+    </header>
 
-        </ul>
-    </div>
+    <section class="panel panel-default clients clients-group">
+        <header class="panel-heading">
+            <div class="heading">
+                <h1 class="pull-left h3">Default</h1>
+                <div class="pull-right">
+                    <div class="btn-group">
+                        <button type="button" data-action="switch-all" data-type="off" class="btn btn-sm client-state-off"><i class="fa fa-lg fa-fw fa-power-off"></i></button>
+                        <button type="button" data-action="switch-all" data-type="on" class="btn btn-sm client-state-on"><i class="fa fa-lg fa-fw fa-power-off"></i></button>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-default js-button-changeurl-all" data-toggle="collapse" data-target="#group-default" aria-expanded="false" aria-controls="group-default"><b>Change Url</b></button>
+                </div>
+            </div>
+
+            <div class="clients-heading-url-wrapper collapse" id="group-default">
+                <div class="clients-heading-url"><input class="form-control" data-event="client:changeurl-all" name="url" value="" type="text"></div>
+            </div>
+        </header>
+        <div class="panel-body">
+            <ul class="clients-list js-clients">
+
+            </ul>
+        </div>
+    </section>
+
 </section>
-

@@ -29,7 +29,7 @@ function Socket(server) {
 
                 serverService.switchTV(data.state, data.id, function (err) {
                     if (err) {
-                        socketErrorListener({id: data.id, message: 'Error on switch TV!'});
+                        socketError({id: data.id, message: 'Error on switch TV!'});
                         return;
                     }
                     socket.emit(socketEvents.CLIENT_UPDATE, data);
@@ -42,7 +42,7 @@ function Socket(server) {
 
                 serverService.changeUrl(data.url, data.id, function (err) {
                     if (err) {
-                        socketErrorListener({id: data.id, message: 'Error on changeUrl!'});
+                        socketError({id: data.id, message: 'Error on changeUrl!'});
                         return;
                     }
                     socket.emit(socketEvents.CLIENT_UPDATE, data);
@@ -55,7 +55,7 @@ function Socket(server) {
 
                 serverService.changeTitle(data.title, data.id, function (err) {
                     if (err) {
-                        socketErrorListener({id: data.id, message: 'Error on changeTitle!'});
+                        socketError({id: data.id, message: 'Error on changeTitle!'});
                         return;
                     }
                     socket.emit(socketEvents.CLIENT_UPDATE, data);

@@ -5,6 +5,7 @@ var $ = jQuery;
 
 require('bootstrap/js/transition');
 require('bootstrap/js/collapse');
+require('bootstrap/js/modal');
 
 var full = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
 global.socket = require('socket.io-client')(full);
@@ -58,12 +59,35 @@ function makeList(_clientPool) {
 
 
 $(function () {
-    if (!clientPool) {
+    var $waiting = $('.clients-waiting');
+
+    socket.on('connect', function () {
         socket.emit(socketEvents.CLIENTS_GET);
-    }
+    });
+
+    socket.on('disconnect', function () {
+        $waiting.toggleClass('active', true);
+    });
+
+    //socket.on('reconnect_attempt', function () {
+    //    console.debug('socket reconnect_attempt');
+    //});
+    //
+    //socket.on('reconnecting', function () {
+    //    console.debug('socket reconnecting');
+    //});
 
     socket.on(socketEvents.CLIENTS_LIST, function (clients) {
         clientPool = ClientPool.fromArray(clients);
+
+        $waiting.toggleClass('active', clients.length <= 0);
+        if (!clients.length) {
+            // polling clients
+            setTimeout(function () {
+                socket.emit(socketEvents.CLIENTS_GET);
+            }, 1000)
+        }
+
         makeList(clientPool);
     });
 
@@ -134,7 +158,7 @@ $(function () {
                 }
 
                 if ($this.data('event') == 'client:changeurl-all') {
-                    $(event.target).parents('.clients').first().find('input[data-event="' + socketEvents.CLIENT_CHANGEURL + '"]').each(function(){
+                    $(event.target).parents('.clients').first().find('input[data-event="' + socketEvents.CLIENT_CHANGEURL + '"]').each(function () {
                         this.value = value;
                         $(this).trigger('blur');
                     });
@@ -153,7 +177,7 @@ $(function () {
 
         })
         .on('show.bs.collapse hidden.bs.collapse', function (event) {
-            $(event.target).parents('.clients').first().find('.js-button-changeurl-all').toggleClass('active', event.type == 'show');
+            $(event.target).parents('.clients').first().find('.js-button-changeurl-all').filter('[data-target="#' + event.target.id + '"]').toggleClass('active', event.type == 'show');
         });
 
 
