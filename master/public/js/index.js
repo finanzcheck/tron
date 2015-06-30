@@ -62,6 +62,7 @@ $(function () {
     var $waiting = $('.clients-waiting');
 
     socket.on('connect', function () {
+        console.debug('connected');
         socket.emit(socketEvents.CLIENTS_GET);
     });
 

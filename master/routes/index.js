@@ -4,10 +4,8 @@ var server;
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    res.render('index', {title: 'TRON', clients: []});
+    res.render('index', {title: 'TRON'});
 });
 
-module.exports = function (_server) {
-    server = _server;
-    return router;
-};
+module.exports = router;
+
