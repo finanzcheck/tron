@@ -59,7 +59,6 @@ if (process.env.NODE_ENV === 'development') {
   app.use(serve(require("./static-routes/less")));
 }
 
-app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
