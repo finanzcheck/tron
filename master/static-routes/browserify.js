@@ -1,5 +1,4 @@
 var browserify = require('browserify');
-var uglify = require('uglify-stream');
 
 var routes = {
     '/dist/js/index.js': function factory() {
