@@ -8,6 +8,7 @@
   "main": "master.js",
   "scripts": {
     "master": "./master/bin/www",
+    "master:dev": "NODE_ENV=development; ./master/bin/www",
     "client": "node ./client/app.js",
     "build": "staticr ./master/public ./master/static-routes/browserify.js ./master/static-routes/less.js",
     "test": "echo \"Error: no test specified\" && exit 1"
