@@ -14,12 +14,23 @@ if [[ "$unamestr" == 'Linux' ]]; then
         echo "node found"
     else
         echo "node not found…installing io.js"
-        sudo apt-get install -y gcc-4.8 g++-4.8
 
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 20
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 50
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.6 20
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50
+        GCCVERSION=$(gcc --version | grep ^gcc | sed 's/^.* //g')
+        GPPVERSION=$(g++ --version | grep ^g++ | sed 's/^.* //g')
+
+        if [ "$GCCVERSION" -lt "4.8.0" ]; then
+            sudo apt-get install -y gcc-4.8
+
+            sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 20
+            sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 50
+        fi
+
+        if [ "$GPPVERSION" -lt "4.8.0" ]; then
+            sudo apt-get install -y g++-4.8
+
+            sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.6 20
+            sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50
+        fi
 
         CURRENT_PWD=$(pwd)
 
