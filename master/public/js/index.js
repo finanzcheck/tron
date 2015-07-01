@@ -168,7 +168,7 @@ $(function () {
 
                 } else {
                     socket.emit($this.data('event'), {
-                        client: $client.attr('client'),
+                        id: $client.attr('client'),
                         url: value
                     });
                 }
