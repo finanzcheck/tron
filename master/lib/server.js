@@ -30,21 +30,6 @@ var protocol = new Protocol({
         }
 
         self.greetBack({token: data.token}, con);
-
-        // // Testing navigateUrl action
-        // setInterval(function () {
-        //     self.requestNavigateUrl((function (urls) {
-        //         return urls[Math.floor(Math.random() * urls.length)];
-        //     })([
-        //         'https://www.google.de/',
-        //         'https://www.github.com/',
-        //         'https://www.heise.de/',
-        //         'https://www.apple.com/',
-        //         'https://www.finanzcheck.de/'
-        //     ]), con, function () {
-        //         console.log(arguments);
-        //     });
-        // }, 2500);
     },
     onReceipt: function (data, con) {
         console.log('onReceipt', data);
