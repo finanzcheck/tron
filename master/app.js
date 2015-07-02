@@ -19,16 +19,16 @@ app.set('view engine', 'hbs');
 
 var blocks = {};
 
-hbs.registerHelper( 'eachInMap', function ( map, block ) {
-   var out = '';
-   Object.keys( map ).map(function( prop ) {
-      out += block.fn( {key: prop, value: map[ prop ]} );
-   });
-   return out;
-} );
+hbs.registerHelper('eachInMap', function (map, block) {
+    var out = '';
+    Object.keys(map).map(function (prop) {
+        out += block.fn({key: prop, value: map[prop]});
+    });
+    return out;
+});
 
 hbs.registerPartials(__dirname + '/views/partials');
-hbs.registerHelper('extend', function(name, context) {
+hbs.registerHelper('extend', function (name, context) {
     var block = blocks[name];
     if (!block) {
         block = blocks[name] = [];
@@ -37,7 +37,7 @@ hbs.registerHelper('extend', function(name, context) {
     block.push(context.fn(this)); // for older versions of handlebars, use block.push(context(this));
 });
 
-hbs.registerHelper('block', function(name) {
+hbs.registerHelper('block', function (name) {
     var val = (blocks[name] || []).join('\n');
 
     // clear the block
@@ -53,10 +53,10 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 //app.use('/js', browserify(path.join(__dirname, 'public/js')));
 
-if (process.env.NODE_ENV === 'development') {
-  var serve = require("staticr/serve");
-  app.use(serve(require("./static-routes/browserify")));
-  app.use(serve(require("./static-routes/less")));
+if (process.env.NODE_ENV != 'production') {
+    var serve = require("staticr/serve");
+    app.use(serve(require("./static-routes/browserify")));
+    app.use(serve(require("./static-routes/less")));
 }
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -71,12 +71,11 @@ app.use(function (req, res, next) {
 });
 
 
-
 // error handlers
 
 // development error handler
 // will print stacktrace
-if (app.get('env') === 'development') {
+if (app.get('env') != 'production') {
     app.use(function (err, req, res, next) {
         res.status(err.status || 500);
         res.render('error', {
