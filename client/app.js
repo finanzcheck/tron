@@ -14,15 +14,16 @@ var resolverSequence = [
     mdns.rst.makeAddressesUnique()
 ];
 
-var clientState = {
-    browserUrl: conf.client.browser.url,
-    tvState: undefined
-};
-
 var gpio = require('./lib/gpio');
 var macAddress = require('./lib/macAddressResolver');
 var Protocol = require('../lib/protocol');
 var ServicePool = require('./lib/servicePool');
+var Client = require('../lib/client');
+
+var clientState = new Client({
+    id: macAddress,
+    url: conf.client.browser.url
+});
 
 var protocol = new Protocol({
     onGreeting: function (data, con) {
@@ -44,40 +45,40 @@ var protocol = new Protocol({
         navigateUrl: function (data, con) {
             var self = this;
 
-            clientState.browserUrl = data.url;
+            clientState.url = data.url;
 
             if (chromeInstance) {
                 chromeInstance.Page.navigate({
-                    url: clientState.browserUrl
+                    url: clientState.url
                 });
 
-                self.respond({
+                self.respond(clientState.responseData({
                     token: data.token
-                }, con);
+                }), con);
             }
             else {
-                self.error({
+                self.error(clientState.responseData({
                     token: data.token,
                     message: 'Cannot connect to Chrome'
-                }, con);
+                }), con);
             }
         },
         switchTV: function (data, con) {
             var self = this;
 
-            clientState.tvState = data.state;
+            clientState.state = data.state;
 
-            gpio.write(conf.client.io.tv, clientState.tvState, function (err) {
+            gpio.write(conf.client.io.tv, clientState.state, function (err) {
                 if (err) {
-                    self.error({
+                    self.error(clientState.responseData({
                         token: data.token,
                         message: err
-                    }, con);
+                    }), con);
                 }
                 else {
-                    self.respond({
+                    self.respond(clientState.responseData({
                         token: data.token
-                    }, con);
+                    }), con);
                 }
             });
         }
@@ -90,11 +91,7 @@ var services = new ServicePool(client, mdnsBrowser);
 
 client.on('connect', function () {
     // introduce ourselves
-    protocol.greet({
-        id: macAddress,
-        tv: clientState.tvState,
-        url: clientState.browserUrl
-    }, this);
+    protocol.greet(clientState.responseData(), this);
 });
 
 client.on('data', function (data) {
@@ -112,7 +109,7 @@ async.waterfall([
             else {
                 gpio.read(conf.client.io.tv, function (err, value) {
                     if (!err) {
-                        clientState.tvState = !!value;
+                        clientState.state = !!value;
                     }
 
                     next(err);

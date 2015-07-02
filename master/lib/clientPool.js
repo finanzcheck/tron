@@ -1,5 +1,5 @@
 var util = require('util');
-var Client = require('./client');
+var Client = require('../../lib/client');
 
 require('array.prototype.find');
 

@@ -12,7 +12,7 @@ var mdnsAd = mdns.createAdvertisement(mdns.tcp(protocolConfig.name), protocolCon
     name: hostname
 });
 
-var Client = require('./client');
+var Client = require('../../lib/client');
 var ClientPool = require('./clientPool');
 var clients = new ClientPool();
 
