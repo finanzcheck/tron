@@ -16,7 +16,7 @@ function Socket(server) {
         socket.on(socketEvents.CLIENTS_GET, function (data) {
             debug([socketEvents.CLIENTS_GET, data]);
 
-            self.ioServer.emit(socketEvents.CLIENTS_LIST, serverService.getClients().getArrayCopy());
+            self.ioServer.emit(socketEvents.CLIENTS_LIST, serverService.getClients());
         });
 
         socket.on(socketEvents.CLIENT_SWITCH, function (data) {
