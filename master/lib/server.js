@@ -112,7 +112,7 @@ module.exports = {
      */
     changeTitle: function (title, which, cb) {
         try {
-            var client = this.getClient(which);
+            var client = this.getClient(which, true);
             client.title = title;
 
             cb(null);
@@ -136,15 +136,16 @@ module.exports = {
         }
     },
     /**
-     * @param  {String} id
+     * @param  {String}  id
+     * @param  {Boolean} [includeOffline]
      *
      * @return {Client}
      */
-    getClient: function (id) {
+    getClient: function (id, includeOffline) {
         var client = clients.getById(id);
 
         if (client) {
-            if (client.up) {
+            if (client.up || includeOffline) {
                 return client;
             }
             else {

@@ -23,16 +23,15 @@ util.inherits(ClientPool, Array);
  * @private
  */
 ClientPool.prototype._initCached = function () {
-    var self = this;
-
     if (this.cache) {
+        var self = this;
         var cached = this.cache.getSync(this.cacheName);
         var clients = [];
 
         if (cached && cached instanceof Array) {
             cached.forEach(function (elem) {
                 var client = new Client(elem);
-                client.on('change', self._updateCacheHandler);
+                client.on('change', self._updateCacheHandler.bind(self));
 
                 clients.push(client);
             });
@@ -57,12 +56,13 @@ ClientPool.prototype._updateCacheHandler = function () {
  */
 ClientPool.prototype.push = function (items) {
     Array.prototype.push.apply(this, arguments);
+    var self = this;
 
     for (var i = 0; i < arguments.length; i++) {
         var client = arguments[i];
 
         if (client instanceof Client) {
-            client.on('change', this._updateCacheHandler);
+            client.on('change', this._updateCacheHandler.bind(self));
         }
     }
 
