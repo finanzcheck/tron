@@ -78,62 +78,86 @@ server.on('error', function (e) {
 });
 
 module.exports = {
+    /**
+     * @param {Function} cb
+     */
     start: function (cb) {
         server.listen(protocolConfig.port, cb || noop);
     },
+    /**
+     * @param {Function} cb
+     */
     stop: function (cb) {
         server.close(cb || noop);
     },
     /**
      * @param {String}   url
      * @param {String}   which
-     * @param {Function} callback
+     * @param {Function} cb
      */
-    changeUrl: function (url, which, callback) {
+    changeUrl: function (url, which, cb) {
         var client = this.getClient(which);
 
         if (client) {
-            protocol.requestNavigateUrl(url, client.socket, callback);
+            protocol.requestNavigateUrl(url, client.socket, cb);
         }
         else {
-            callback(new Error('Client not found!'));
+            cb(new Error('Client not found!'));
         }
     },
     /**
      * @param {String}   title
      * @param {String}   which
-     * @param {Function} callback
+     * @param {Function} cb
      */
-    changeTitle: function (title, which, callback) {
-        var client = this.getClient(which);
-
-        if (client) {
+    changeTitle: function (title, which, cb) {
+        try {
+            var client = this.getClient(which);
             client.title = title;
 
             cb(null);
         }
-        else {
-            callback(new Error('Client not found!'));
+        catch (e) {
+            cb(e);
         }
     },
     /**
      * @param {Boolean|Number} state
      * @param {String}         which
-     * @param {Function}       callback
+     * @param {Function}       cb
      */
-    switchTV: function (state, which, callback) {
-        var client = this.getClient(which);
+    switchTV: function (state, which, cb) {
+        try {
+            var client = this.getClient(which);
+            protocol.requestSwitchTV(state, client.socket, cb);
+        }
+        catch (e) {
+            cb(e);
+        }
+    },
+    /**
+     * @param  {String} id
+     *
+     * @return {Client}
+     */
+    getClient: function (id) {
+        var client = clients.getById(id);
 
         if (client) {
-            protocol.requestSwitchTV(state, client.socket, callback);
+            if (client.up) {
+                return client;
+            }
+            else {
+                throw new Error('Client offline');
+            }
         }
         else {
-            callback(new Error('Client not found!'));
+            throw new Error('Client not found!');
         }
     },
-    getClient: function (id) {
-        return clients.getById(id);
-    },
+    /**
+     * @return {ClientPool}
+     */
     getClients: function () {
         return clients;
     }

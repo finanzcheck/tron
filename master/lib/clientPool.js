@@ -100,8 +100,8 @@ ClientPool.prototype.splice = function (start, deleteCount, items) {
 
 /**
  *
- * @param id
- * @returns {T}
+ * @param   {String} id
+ * @returns {Client}
  */
 ClientPool.prototype.getById = function (id) {
     return this.find(function (client) {
