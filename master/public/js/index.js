@@ -51,10 +51,10 @@ function setState($client, state) {
 function makeList(_clientPool) {
     var list = '';
     _clientPool.forEach(function (client) {
-        list += '<li class="clients-list-item client" client="' + client.id + '"><a data-action="switch" href="" class="client-state btn"><i class="fa fa-3x fa-fw fa-power-off"></i></a><span><input class="form-control client-title" name="title" data-event="' + socketEvents.CLIENT_CHANGETITLE + '" type="text" value="' + client.title + '" /><input type="text" class="form-control client-url" data-event="' + socketEvents.CLIENT_CHANGEURL + '" name="url" value="' + client.url + '" /></span><span class="client-id">' + client.id + '</span></li>'
+        list += '<li class="clients-list-item client" client="' + client.id + '"><a data-action="switch" href="" class="client-state btn"><i class="fa fa-3x fa-fw fa-power-off"></i></a><span><input class="form-control client-title js-client-title" name="title" data-event="' + socketEvents.CLIENT_CHANGETITLE + '" type="text" value="' + client.title + '" /><input type="text" class="form-control client-url js-client-url" data-event="' + socketEvents.CLIENT_CHANGEURL + '" name="url" value="' + client.url + '" /></span><span class="client-id">' + client.id + '</span></li>'
     });
 
-    $('.js-clients').append(list);
+    $('.js-clients').empty().append(list);
 }
 
 
@@ -62,7 +62,6 @@ $(function () {
     var $waiting = $('.clients-waiting');
 
     socket.on('connect', function () {
-        console.debug('connected');
         socket.emit(socketEvents.CLIENTS_GET);
     });
 
