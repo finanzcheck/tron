@@ -96,13 +96,11 @@ module.exports = {
      * @param {Function} cb
      */
     changeUrl: function (url, which, cb) {
-        var client = this.getClient(which);
-
-        if (client) {
+        try {
+            var client = this.getClient(which);
             protocol.requestNavigateUrl(url, client.socket, cb);
-        }
-        else {
-            cb(new Error('Client not found!'));
+        } catch (e) {
+            cb(e);
         }
     },
     /**
