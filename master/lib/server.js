@@ -23,14 +23,17 @@ var server = net.createServer();
 var protocol = new Protocol({
     onGreeting: function (data, con) {
         var self = this;
-
-        data.up = true;
-
         var client = clients.getById(data.id);
 
-        if (!client) {
-            clients.push(new Client(data, con));
+        if (client) {
+            client.state = data.state;
         }
+        else {
+            client = new Client(data);
+            clients.push(client);
+        }
+
+        client.socket = con;
 
         self.greetBack({token: data.token}, con);
     },
@@ -97,8 +100,12 @@ module.exports = {
      */
     changeUrl: function (url, which, cb) {
         try {
-            var client = this.getClient(which);
-            protocol.requestNavigateUrl(url, client.socket, cb);
+            var client = this.getClient(which, true);
+            client.url = url;
+
+            if (client.up) {
+                protocol.requestNavigateUrl(url, client.socket, cb);
+            }
         } catch (e) {
             cb(e);
         }
