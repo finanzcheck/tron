@@ -57,12 +57,13 @@ function ServicePool(client, browser) {
         socket.destroy();
         self.flag(service, false);
         console.log(err);
+
+        self.connected = false;
+        self.connecting = false;
     });
     this.client.on('end', function () {
         self.connected = false;
         self.connecting = false;
-
-        self.connect();
     });
     /**
      * @type {mdns.Browser}
@@ -179,9 +180,15 @@ ServicePool.prototype.connect = function () {
 ServicePool.prototype.start = function () {
     this.browser.start();
     var self = this;
-    this.connectionTimer = setTimeout(function () {
-        self.connect();
-    }, 2500);
+
+    function doConnect() {
+        self.connectionTimer = setTimeout(function () {
+            doConnect();
+            self.connect();
+        }, 2500);
+    }
+
+    doConnect();
 };
 
 ServicePool.prototype.stop = function () {
