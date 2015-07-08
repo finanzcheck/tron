@@ -32,20 +32,23 @@ function clientIsPending($client) {
     return $client.find('.client-state').hasClass(clientState.PENDING);
 }
 
-function setState($client, state) {
+function clientTogglePending($client, isPending) {
     var $state = $client.find('.client-state'),
         $formControl = $client.find('.form-control');
-    if (state.toUpperCase() === 'PENDING') {
-
+    if (isPending) {
         $formControl.prop('disabled', true);
 
-        return $state.addClass(clientState[state.toUpperCase()])
-
+        return $state.addClass(clientState.PENDING)
     }
-
     $formControl.prop('disabled', false);
+    return $state.removeClass([clientState.PENDING].join(' '));
+}
 
-    return $state.removeClass([clientState.PENDING, clientState.OFF, clientState.ON].join(' ')).addClass(clientState[state.toUpperCase()]);
+function setState($client, state) {
+    if (state.toUpperCase() === 'PENDING') {
+        clientTogglePending($client, true);
+    }
+    return clientTogglePending($client, false).removeClass([clientState.OFF, clientState.ON].join(' ')).addClass(clientState[state.toUpperCase()]);
 }
 
 function makeList(_clientPool) {
@@ -97,7 +100,25 @@ $(function () {
 
     socket.on(socketEvents.CLIENT_UPDATE, function (data) {
         var $client = getClient(data.id);
-        setState($client, data.state ? 'on' : 'off');
+        var isPending = clientIsPending($client);
+        for (var k in data) {
+            if (data.hasOwnProperty(k)) {
+                switch (k) {
+                    case 'state':
+                        setState($client, data.state ? 'on' : 'off');
+                        isPending = false;
+                        break;
+                    default:
+                        var $inp = $client.find('.js-client-' + k);
+                        if ($inp.length) {
+                            $inp.val(data[k]);
+                            isPending = false;
+                        }
+                }
+            }
+        }
+
+        clientTogglePending($client, isPending);
     });
 
     socket.on(socketEvents.ERROR, function (data) {
@@ -166,10 +187,9 @@ $(function () {
                     $(event.target).parents('.clients').first().find('.js-button-changeurl-all').trigger('click');
 
                 } else {
-                    socket.emit($this.data('event'), {
-                        id: $client.attr('client'),
-                        url: value
-                    });
+                    var data = {id: $client.attr('client')};
+                    data[this.name] = value;
+                    socket.emit($this.data('event'), data);
                 }
 
             }
