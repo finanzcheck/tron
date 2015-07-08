@@ -106,6 +106,9 @@ module.exports = {
             if (client.up) {
                 protocol.requestNavigateUrl(url, client.socket, cb);
             }
+            else {
+                cb(null, client);
+            }
         } catch (e) {
             cb(e);
         }
@@ -120,7 +123,7 @@ module.exports = {
             var client = this.getClient(which, true);
             client.title = title;
 
-            cb(null);
+            cb(null, client);
         }
         catch (e) {
             cb(e);
