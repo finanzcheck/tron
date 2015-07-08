@@ -16,7 +16,7 @@ function Socket(server) {
         socket.on(socketEvents.CLIENTS_GET, function (data) {
             debug([socketEvents.CLIENTS_GET, data]);
 
-            self.ioServer.emit(socketEvents.CLIENTS_LIST, serverService.getClients());
+            self.ioServer.emit(socketEvents.CLIENTS_LIST, serverService.getClientPool());
         });
 
         socket.on(socketEvents.CLIENT_SWITCH, function (data) {
@@ -57,6 +57,10 @@ function Socket(server) {
                 }
                 self.ioServer.emit(socketEvents.CLIENT_UPDATE, clientData);
             });
+        });
+
+        serverService.getClientPool().on('clientsUpdated', function () {
+            self.ioServer.emit(socketEvents.CLIENTS_LIST, serverService.getClientPool());
         });
     });
 }

@@ -17,20 +17,20 @@ var Client = require('../../lib/client');
 var ClientPool = require('./clientPool');
 
 var cache = new Cache();
-var clients = new ClientPool(cache);
+var clientPool = new ClientPool(cache);
 
 var server = net.createServer();
 var protocol = new Protocol({
     onGreeting: function (data, con) {
         var self = this;
-        var client = clients.getById(data.id);
+        var client = clientPool.getById(data.id);
 
         if (client) {
             client.state = data.state;
         }
         else {
             client = new Client(data);
-            clients.push(client);
+            clientPool.add(client);
         }
 
         client.socket = con;
@@ -150,7 +150,7 @@ module.exports = {
      * @return {Client}
      */
     getClient: function (id, includeOffline) {
-        var client = clients.getById(id);
+        var client = clientPool.getById(id);
 
         if (client) {
             if (client.up || includeOffline) {
@@ -167,7 +167,7 @@ module.exports = {
     /**
      * @return {ClientPool}
      */
-    getClients: function () {
-        return clients;
+    getClientPool: function () {
+        return clientPool;
     }
 };

@@ -1,6 +1,7 @@
 var util = require('util');
 var Client = require('../../lib/client');
 var Cache = require('./cache');
+var EventEmitter = require('events').EventEmitter;
 
 require('array.prototype.find');
 
@@ -12,12 +13,13 @@ require('array.prototype.find');
  */
 function ClientPool(cache, cacheName) {
     this.cache = cache;
+    this.clients = [];
     this.cacheName = cacheName || 'clientPool';
 
     this._initCached();
 }
 
-util.inherits(ClientPool, Array);
+util.inherits(ClientPool, EventEmitter);
 
 /**
  * @private
@@ -26,17 +28,14 @@ ClientPool.prototype._initCached = function () {
     if (this.cache) {
         var self = this;
         var cached = this.cache.getSync(this.cacheName);
-        var clients = [];
 
         if (cached && cached instanceof Array) {
             cached.forEach(function (elem) {
                 var client = new Client(elem);
                 client.on('change', self._updateCacheHandler.bind(self));
 
-                clients.push(client);
+                self.clients.push(client);
             });
-
-            Array.prototype.push.apply(this, clients);
         }
     }
 };
@@ -48,14 +47,16 @@ ClientPool.prototype._updateCacheHandler = function () {
     if (this.cache) {
         this.cache.set(this.cacheName, this);
     }
+
+    this.emit('clientsUpdated');
 };
 
 /**
  * @param {...Client} [items]
  * @return {Number}
  */
-ClientPool.prototype.push = function (items) {
-    Array.prototype.push.apply(this, arguments);
+ClientPool.prototype.add = function (items) {
+    Array.prototype.push.apply(this.clients, arguments);
     var self = this;
 
     for (var i = 0; i < arguments.length; i++) {
@@ -70,27 +71,16 @@ ClientPool.prototype.push = function (items) {
 };
 
 /**
- * @return {Client}
+ * @param {Client} client
+ * @return {Array.<Client>|undefined}
  */
-ClientPool.prototype.pop = function () {
-    var popped = Array.prototype.push.apply(this, arguments);
-
-    if (popped instanceof Client) {
-        popped.removeListener('change', this._updateCacheHandler);
+ClientPool.prototype.remove = function (client) {
+    var index = this.clients.indexOf(client);
+    if (index === -1) {
+        return;
     }
 
-    return popped;
-};
-
-/**
- @param {Number} [start]
- @param {Number} [deleteCount]
- @param {...T} [items]
- @return {Array.<Client>}
- */
-ClientPool.prototype.splice = function (start, deleteCount, items) {
-    var spliced = Array.prototype.splice.apply(this, arguments);
-
+    var spliced = this.clients.splice(index, 1);
     for (var i = 0; i < spliced.length; i++) {
         spliced[i].removeListener('change', this._updateCacheHandler);
     }
@@ -104,7 +94,7 @@ ClientPool.prototype.splice = function (start, deleteCount, items) {
  * @returns {Client}
  */
 ClientPool.prototype.getById = function (id) {
-    return this.find(function (client) {
+    return this.clients.find(function (client) {
         return client.id == id;
     });
 };
@@ -113,7 +103,7 @@ ClientPool.prototype.getById = function (id) {
  * @returns {Array.<Client>}
  */
 ClientPool.prototype.toJSON = function () {
-    return this.slice();
+    return this.clients;
 };
 
 /**
@@ -124,7 +114,7 @@ ClientPool.prototype.toJSON = function () {
 ClientPool.fromArray = function (clients) {
     var clientPool = new ClientPool();
     clients.forEach(function (client) {
-        clientPool.push(new Client(client));
+        clientPool.add(new Client(client));
     });
     return clientPool;
 };
