@@ -71,7 +71,7 @@ function ServicePool(client, browser) {
     this.browser = browser;
 
     this.browser.on('serviceUp', function (service) {
-        if (service.networkInterface) {
+        if (service.networkInterface && service.matchingCluster) {
             self.push(service);
             self.connect();
         }
