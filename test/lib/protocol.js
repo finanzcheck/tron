@@ -43,28 +43,9 @@ describe('Protocol', function () {
                 done();
             }, 1000);
 
-            protocol.on(protocol.GREETING, function () {
-                if (count < incompleteMessages.length) {
-                    clearTimeout(errTimeout);
-                    assert(true, 'Event fired');
-                    done();
-                }
-            });
-
-            incompleteMessages.forEach(function (msg) {
-                protocol.interpret(msg, con);
-            })
-        });
-
-        it('should not parse invalid messages and throw an error', function (done) {
-            var count = 0;
-            errTimeout = setTimeout(function () {
-                assert(false, 'Event never fired');
-                done();
-            }, 1000);
-
-            protocol.on(protocol.GREETING, function () {
-                if (count < incompleteMessages.length) {
+            protocol.on(protocol.ERROR, function () {
+                count++;
+                if (count >= incompleteMessages.length) {
                     clearTimeout(errTimeout);
                     assert(true, 'Event fired');
                     done();
