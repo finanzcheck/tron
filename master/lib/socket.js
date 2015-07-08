@@ -37,12 +37,12 @@ function Socket(server) {
             debug([socketEvents.CLIENT_CHANGEURL, data]);
             self.ioServer.emit(socketEvents.CLIENT_PENDING, data.id);
 
-            serverService.changeUrl(data.url, data.id, function (err) {
+            serverService.changeUrl(data.url, data.id, function (err, clientData) {
                 if (err) {
                     socketError({id: data.id, message: 'Error on changeUrl!'});
                     return;
                 }
-                self.ioServer.emit(socketEvents.CLIENT_UPDATE, data);
+                self.ioServer.emit(socketEvents.CLIENT_UPDATE, clientData);
             });
         });
 
@@ -50,12 +50,12 @@ function Socket(server) {
             debug([socketEvents.CLIENT_CHANGETITLE, data]);
             self.ioServer.emit(socketEvents.CLIENT_PENDING, data.id);
 
-            serverService.changeTitle(data.title, data.id, function (err) {
+            serverService.changeTitle(data.title, data.id, function (err, clientData) {
                 if (err) {
                     socketError({id: data.id, message: 'Error on changeTitle!'});
                     return;
                 }
-                self.ioServer.emit(socketEvents.CLIENT_UPDATE, data);
+                self.ioServer.emit(socketEvents.CLIENT_UPDATE, clientData);
             });
         });
     });
