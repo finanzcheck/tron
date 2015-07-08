@@ -2,7 +2,9 @@
   "protocol": {
     "name": "tron",
     "port": 20287,
-    "txtRecord": {}
+    "txtRecord": {
+      "cluster": "default"
+    }
   },
   "client": {
     "browser": {

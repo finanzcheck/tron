@@ -6,12 +6,13 @@ var client = new net.Socket();
 var chromeCtrl = require('chrome-remote-interface');
 var chromeInstance;
 var conf = require('config');
-// raspbians mdns implementation fails
-// at resolving ipv6 addresses…what a bummer
+var resolveCluster = require('./lib/mdnsClusterResolver');
 var resolverSequence = [
     mdns.rst.DNSServiceResolve(),
+    // raspbians mdns implementation fails at resolving ipv6 addresses…what a bummer
     'DNSServiceGetAddrInfo' in mdns.dns_sd ? mdns.rst.DNSServiceGetAddrInfo() : mdns.rst.getaddrinfo({families: [4]}),
-    mdns.rst.makeAddressesUnique()
+    mdns.rst.makeAddressesUnique(),
+    resolveCluster({cluster: conf.protocol.txtRecord.cluster})
 ];
 
 var gpio = require('./lib/gpio');
