@@ -1,5 +1,3 @@
-var ClientPool = require('../../lib/clientPool');
-
 global.jQuery = require('jquery');
 var $ = jQuery;
 
@@ -11,13 +9,13 @@ var full = location.protocol + '//' + location.hostname + (location.port ? ':' +
 global.socket = require('socket.io-client')(full);
 
 var socketEvents = require('../../lib/socketEvents');
-var clientPool;
 
 var clientState = {
     PENDING: 'client-state-pending active',
     ON: 'client-state-on',
     OFF: 'client-state-off',
-    ERROR: 'client-state-error'
+    ERROR: 'client-state-error',
+    UNDEFINED: 'client-state-undefined disabled'
 };
 
 function getClient(str) {
@@ -48,13 +46,15 @@ function setState($client, state) {
     if (state.toUpperCase() === 'PENDING') {
         clientTogglePending($client, true);
     }
-    return clientTogglePending($client, false).removeClass([clientState.OFF, clientState.ON].join(' ')).addClass(clientState[state.toUpperCase()]);
+    return clientTogglePending($client, false).removeClass([clientState.OFF, clientState.ON, clientState.UNDEFINED].join(' ')).addClass(clientState[state.toUpperCase()]);
 }
 
-function makeList(_clientPool) {
+function makeList(clientPool) {
     var list = '';
-    _clientPool.forEach(function (client) {
-        list += '<li class="clients-list-item client" client="' + client.id + '"><a data-action="switch" href="" class="client-state btn"><i class="fa fa-3x fa-fw fa-power-off"></i></a><span><input class="form-control client-title js-client-title" name="title" data-event="' + socketEvents.CLIENT_CHANGETITLE + '" type="text" value="' + client.title + '" /><input type="text" class="form-control client-url js-client-url" data-event="' + socketEvents.CLIENT_CHANGEURL + '" name="url" value="' + client.url + '" /></span><span class="client-id">' + client.id + '</span></li>'
+    clientPool.forEach(function (client) {
+
+        var state = client.state == undefined ? 'undefined' : client.state ? 'on' : 'off';
+        list += '<li class="clients-list-item client" client="' + client.id + '"><a data-action="switch" href="" class="client-state ' + clientState[(state + '').toUpperCase()] + ' btn"><i class="fa fa-3x fa-fw fa-power-off"></i></a><span><input class="form-control client-title js-client-title" name="title" data-event="' + socketEvents.CLIENT_CHANGETITLE + '" type="text" value="' + client.title + '" /><input type="text" class="form-control client-url js-client-url" data-event="' + socketEvents.CLIENT_CHANGEURL + '" name="url" value="' + client.url + '" /></span><span class="client-id">' + client.id + '</span></li>'
     });
 
     $('.js-clients').empty().append(list);
@@ -81,8 +81,6 @@ $(function () {
     //});
 
     socket.on(socketEvents.CLIENTS_LIST, function (clients) {
-        clientPool = ClientPool.fromArray(clients);
-
         $waiting.toggleClass('active', clients.length <= 0);
         if (!clients.length) {
             // polling clients
@@ -91,7 +89,7 @@ $(function () {
             }, 1000)
         }
 
-        makeList(clientPool);
+        makeList(clients);
     });
 
     socket.on(socketEvents.CLIENT_PENDING, function (client) {
@@ -105,7 +103,7 @@ $(function () {
             if (data.hasOwnProperty(k)) {
                 switch (k) {
                     case 'state':
-                        setState($client, data.state ? 'on' : 'off');
+                        setState($client, data.state == undefined ? 'undefined' : data.state ? 'on' : 'off');
                         isPending = false;
                         break;
                     default:
@@ -117,7 +115,6 @@ $(function () {
                 }
             }
         }
-
         clientTogglePending($client, isPending);
     });
 
