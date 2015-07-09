@@ -21,18 +21,8 @@ function getClient(str) {
     return $('[client="' + str + '"]');
 }
 
-function hasActiveClients(clients){
-    return clients.filter(function(client){
-        return client.up;
-    }).length > 0;
-}
-
 function getClientFromAction($action) {
     return $action.parents('.client').first();
-}
-
-function clientIsPending($client) {
-    return $client.find('.client-state').hasClass(clientState.PENDING);
 }
 
 function clientTogglePending($client, isPending) {
@@ -77,14 +67,6 @@ $(function () {
         $waiting.toggleClass('active', true);
     });
 
-    //socket.on('reconnect_attempt', function () {
-    //    console.debug('socket reconnect_attempt');
-    //});
-    //
-    //socket.on('reconnecting', function () {
-    //    console.debug('socket reconnecting');
-    //});
-
     socket.on(socketEvents.CLIENTS_LIST, function (clients) {
         $waiting.toggleClass('active', clients.length <= 0);
         if (!clients.length) {
@@ -93,34 +75,11 @@ $(function () {
                 socket.emit(socketEvents.CLIENTS_GET);
             }, 1000)
         }
-
         makeList(clients);
     });
 
     socket.on(socketEvents.CLIENT_PENDING, function (client) {
         setState(getClient(client), 'pending');
-    });
-
-    socket.on(socketEvents.CLIENT_UPDATE, function (data) {
-        var $client = getClient(data.id);
-        var isPending = clientIsPending($client);
-        for (var k in data) {
-            if (data.hasOwnProperty(k)) {
-                switch (k) {
-                    case 'state':
-                        setState($client, data.state == undefined ? 'undefined' : data.state ? 'on' : 'off');
-                        isPending = false;
-                        break;
-                    default:
-                        var $inp = $client.find('.js-client-' + k);
-                        if ($inp.length) {
-                            $inp.val(data[k]);
-                            isPending = false;
-                        }
-                }
-            }
-        }
-        clientTogglePending($client, isPending);
     });
 
     socket.on(socketEvents.ERROR, function (data) {
@@ -178,6 +137,16 @@ $(function () {
                 if ($this.data('value') == this.value) {
                     $this.data('value', '');
                     return;
+                }
+
+                if (this.type == 'url') {
+                    var isValideUrl = value.match(/^(ht|f)tps?:\/\/[a-z0-9-\.]+\.[a-z]{2,4}\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/) !== null;
+                    $this.toggleClass('hasError', !isValideUrl);
+                    if (!isValideUrl) {
+                        alert("Please enter valid URL!");
+                        $this.focus();
+                        return;
+                    }
                 }
 
                 if ($this.data('event') == 'client:changeurl-all') {
