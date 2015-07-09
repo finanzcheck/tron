@@ -4,13 +4,31 @@
   }
 
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
 
   .pull-right {
     align-self: flex-end;
+    white-space: nowrap;
+
+    .btn {
+      vertical-align: middle;
+
+      &-default {
+        .fa {
+          @media (min-width: @screen-xs-min) {
+            display: none;
+          }
+        }
+        b {
+          @media (max-width: @screen-xs-min) {
+            display: none;
+          }
+        }
+      }
+    }
   }
 
 }
