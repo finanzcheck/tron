@@ -1,5 +1,6 @@
 var util = require('util');
 var Client = require('../../lib/client');
+var Group = require('../../lib/group');
 var Cache = require('./cache');
 var EventEmitter = require('events').EventEmitter;
 
@@ -16,6 +17,17 @@ function ClientPool(cache, cacheName) {
     this.clients = [];
     this.cacheName = cacheName || 'clientPool';
 
+    var groups = [];
+
+    Object.defineProperties(this, {
+        groups: {
+            enumerable: true,
+            get: function () {
+                return groups;
+            }
+        }
+    });
+
     this._initCached();
 }
 
@@ -29,13 +41,21 @@ ClientPool.prototype._initCached = function () {
         var self = this;
         var cached = this.cache.getSync(this.cacheName);
 
-        if (cached && cached instanceof Array) {
-            cached.forEach(function (elem) {
-                var client = new Client(elem);
-                client.on('change', self._updateCacheHandler.bind(self));
+        function initCache(cache, cClass, handler) {
+            var cachedObjs = cached[cache];
+            if (cachedObjs && cachedObjs instanceof  Array) {
+                cachedObjs.forEach(function (elem) {
+                    var cObj = new cClass(elem);
+                    cObj.on('change', handler.bind(self));
 
-                self.clients.push(client);
-            });
+                    self[cache].push(cObj);
+                });
+            }
+        }
+
+        if (cached) {
+            initCache('groups', Group, self._updateGroupHandler);
+            initCache('clients', Client, self._updateClientHandler);
         }
     }
 };
@@ -43,12 +63,26 @@ ClientPool.prototype._initCached = function () {
 /**
  * @private
  */
-ClientPool.prototype._updateCacheHandler = function () {
+ClientPool.prototype._updateCache = function () {
     if (this.cache) {
         this.cache.set(this.cacheName, this);
     }
+};
 
+/**
+ * @private
+ */
+ClientPool.prototype._updateClientHandler = function () {
+    this._updateCache();
     this.emit('clientsUpdated');
+};
+
+/**
+ * @private
+ */
+ClientPool.prototype._updateGroupHandler = function () {
+    this._updateCache();
+    this.emit('groupsUpdated');
 };
 
 /**
@@ -63,11 +97,30 @@ ClientPool.prototype.add = function (items) {
         var client = arguments[i];
 
         if (client instanceof Client) {
-            client.on('change', this._updateCacheHandler.bind(self));
+            client.on('change', this._updateClientHandler.bind(self));
         }
     }
 
-    this._updateCacheHandler();
+    this._updateClientHandler();
+};
+
+/**
+ * @param {...Group} [items]
+ * @return {Number}
+ */
+ClientPool.prototype.addGroup = function (items) {
+    Array.prototype.push.apply(this.groups, arguments);
+    var self = this;
+
+    for (var i = 0; i < arguments.length; i++) {
+        var group = arguments[i];
+
+        if (group instanceof Group) {
+            group.on('change', this._updateGroupHandler.bind(self));
+        }
+    }
+
+    this._updateGroupHandler();
 };
 
 /**
@@ -82,7 +135,7 @@ ClientPool.prototype.remove = function (client) {
 
     var spliced = this.clients.splice(index, 1);
     for (var i = 0; i < spliced.length; i++) {
-        spliced[i].removeListener('change', this._updateCacheHandler);
+        spliced[i].removeListener('change', this._updateClientHandler);
     }
 
     return spliced;
@@ -103,7 +156,10 @@ ClientPool.prototype.getById = function (id) {
  * @returns {Array.<Client>}
  */
 ClientPool.prototype.toJSON = function () {
-    return this.clients;
+    return {
+        groups: this.groups,
+        clients: this.clients
+    };
 };
 
 /**
@@ -111,11 +167,15 @@ ClientPool.prototype.toJSON = function () {
  * @param clients
  * @returns {ClientPool}
  */
-ClientPool.fromArray = function (clients) {
+ClientPool.fromArray = function (clients, groups) {
     var clientPool = new ClientPool();
     clients.forEach(function (client) {
         clientPool.add(new Client(client));
     });
+    groups.forEach(function (group) {
+        clientPool.addGroup(new Group(group));
+    });
+
     return clientPool;
 };
 

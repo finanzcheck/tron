@@ -45,16 +45,13 @@ function setState($client, state) {
 }
 
 function makeList(clientPool) {
-    var list = '';
-    clientPool.forEach(function (client) {
-
+    var list = clientPool.clients.reduce(function (carry, client) {
         var state = !client.up ? 'undefined' : client.state ? 'on' : 'off';
-        list += '<li class="clients-list-item client" client="' + client.id + '"><a data-action="switch" href="" class="client-state ' + clientState[(state + '').toUpperCase()] + ' btn"><i class="fa fa-3x fa-fw fa-power-off"></i></a><span><input class="form-control client-title js-client-title" name="title" data-event="' + socketEvents.CLIENT_CHANGETITLE + '" type="text" value="' + client.title + '" /><input type="url" class="form-control client-url js-client-url" data-event="' + socketEvents.CLIENT_CHANGEURL + '" name="url" value="' + client.url + '" /></span><span class="client-id">' + client.id + '</span></li>'
-    });
+        return '<li class="clients-list-item client" client="' + client.id + '"><a data-action="switch" href="" class="client-state ' + clientState[(state + '').toUpperCase()] + ' btn"><i class="fa fa-3x fa-fw fa-power-off"></i></a><span><input class="form-control client-title js-client-title" name="title" data-event="' + socketEvents.CLIENT_CHANGETITLE + '" type="text" value="' + client.title + '" /><input type="url" class="form-control client-url js-client-url" data-event="' + socketEvents.CLIENT_CHANGEURL + '" name="url" value="' + client.url + '" /></span><span class="client-id">' + client.id + '</span></li>'
+    }, '');
 
     $('.js-clients').empty().append(list);
 }
-
 
 $(function () {
     var $waiting = $('.clients-waiting');
@@ -160,11 +157,8 @@ $(function () {
 
             }
 
-
         })
         .on('show.bs.collapse hidden.bs.collapse', function (event) {
             $(event.target).parents('.clients').first().find('.js-button-changeurl-all').filter('[data-target="#' + event.target.id + '"]').toggleClass('active', event.type == 'show');
         });
-
-
 });

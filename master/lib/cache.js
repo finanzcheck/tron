@@ -62,7 +62,7 @@ Cache.prototype.set = function (cache, key, value, cb) {
     cb = cb || noop;
 
     if (undefined === key) {
-        fs.writeFile(path, JSON.stringify(value, null, 4), cb);
+        fs.writeFile(path, JSON.stringify(value, null, 2), cb);
     }
     else {
         this.get(cache, function (err, content) {
