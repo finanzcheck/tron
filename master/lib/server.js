@@ -38,7 +38,14 @@ var protocol = new Protocol({
         self.greetBack({token: data.token}, con);
     },
     onReceipt: function (data, con) {
-        console.log('onReceipt', data);
+        // update client-state
+        if (data && data.id) {
+            var client = clientPool.getById(data.id);
+
+            if (client) {
+                client.update(data);
+            }
+        }
     },
     onRequest: function (data, con) {
         console.log('onRequest', data);
