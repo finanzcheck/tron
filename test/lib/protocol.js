@@ -1,3 +1,4 @@
+var sinon = require('sinon');
 var expect = require('chai').expect;
 var assert = require('chai').assert;
 var net = require('net');
@@ -5,6 +6,57 @@ var Protocol = require('../../lib/protocol');
 var eventTimeout = require('../../lib/test/eventTimeout');
 
 describe('Protocol', function () {
+    var socket = new net.Socket();
+    var stub = sinon.stub(socket, 'write', function (data, encoding, cb) {
+        var args = stub.args;
+
+        // this will echo whatever they wrote
+        if (args.length > 0)
+            this.emit('data', stub.args[stub.callCount - 1][0]);
+    });
+
+    describe('#constructor', function () {
+        it('should accept event callbacks', function (done) {
+            var triggerCount = 0;
+            var eventCount;
+
+            var callback = function () {
+                triggerCount++;
+
+                if (triggerCount >= eventCount) {
+                    done();
+                }
+            };
+
+            var events = {
+                onGreeting: callback,
+                onRequest: callback,
+                onReceipt: callback,
+                onPassage: callback,
+                onError: callback
+            };
+            var additionalEvents = {
+                something: callback,
+                else: callback
+
+            };
+            eventCount = Object.keys(events).length + Object.keys(additionalEvents).length;
+            events.additional = additionalEvents;
+
+            var protocol = new Protocol(events);
+
+            protocol.emit(protocol.GREETING);
+            protocol.emit(protocol.REQUEST);
+            protocol.emit(protocol.RECEIPT);
+            protocol.emit(protocol.PASSAGE);
+            protocol.emit(protocol.ERROR);
+
+            for (var event in additionalEvents) {
+                protocol.emit(event);
+            }
+        });
+    });
+
     describe('#interpret()', function () {
         var protocol = new Protocol();
 
@@ -17,10 +69,10 @@ describe('Protocol', function () {
         var incompleteMessages = [
             '',
             protocol.GREETING,
-            protocol.GREETING + protocol.TYPE.REQUEST
+            protocol.GREETING + protocol.TYPE.REQUEST,
+            protocol.GREETING + protocol.TYPE.REQUEST + '{',
+            protocol.GREETING + protocol.TYPE.REQUEST + '{\o/}'
         ];
-        var invalidDataMessages = protocol.GREETING + protocol.TYPE.REQUEST + '{';
-        var con = new net.Socket();
 
         it('should parse a valid request and trigger an event', function (done) {
             var errTimeout = eventTimeout(done);
@@ -32,7 +84,7 @@ describe('Protocol', function () {
                 done();
             });
 
-            var results = protocol.interpret(validRequest, con);
+            var results = protocol.interpret(validRequest, socket);
 
             expect(results).to.have.a.property('method', protocol.GREETING);
             expect(results).to.have.a.property('type', 'REQUEST');
@@ -49,7 +101,7 @@ describe('Protocol', function () {
                 assert(true, 'Event fired');
                 done();
             });
-            protocol.interpret(validRequestBuffer, con);
+            protocol.interpret(validRequestBuffer, socket);
         });
 
         it('should parse a valid response and trigger an event', function (done) {
@@ -61,7 +113,7 @@ describe('Protocol', function () {
                 assert(true, 'Event fired');
             });
 
-            var results = protocol.interpret(validResponse, con);
+            var results = protocol.interpret(validResponse, socket);
 
             expect(results).to.have.a.property('method', protocol.GREETING);
             expect(results).to.have.a.property('type', 'RESPONSE');
@@ -86,8 +138,27 @@ describe('Protocol', function () {
             });
 
             incompleteMessages.forEach(function (msg) {
-                protocol.interpret(msg, con);
+                protocol.interpret(msg, socket);
             })
+        });
+    });
+
+    describe('#greet()', function () {
+        it('should send a greeting message', function (done) {
+            protocol = new Protocol();
+
+            protocol.greet(socket, function () {
+                done();
+            });
+        });
+
+        it('should return a greeting message', function (done) {
+            protocol = new Protocol();
+            socket.once('data', function () {
+                done();
+            });
+
+            protocol.greetBack(socket, {token: '4711'});
         });
     });
 });
