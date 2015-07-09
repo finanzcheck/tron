@@ -3,7 +3,6 @@ var $ = jQuery;
 
 require('bootstrap/js/transition');
 require('bootstrap/js/collapse');
-require('bootstrap/js/modal');
 
 var full = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
 global.socket = require('socket.io-client')(full);
