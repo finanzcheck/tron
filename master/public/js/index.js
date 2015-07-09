@@ -69,12 +69,7 @@ $(function () {
 
     socket.on(socketEvents.CLIENTS_LIST, function (clients) {
         $waiting.toggleClass('active', clients.length <= 0);
-        if (!clients.length) {
-            // polling clients
-            setTimeout(function () {
-                socket.emit(socketEvents.CLIENTS_GET);
-            }, 1000)
-        }
+
         makeList(clients);
     });
 
