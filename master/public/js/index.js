@@ -21,6 +21,12 @@ function getClient(str) {
     return $('[client="' + str + '"]');
 }
 
+function hasActiveClients(clients){
+    return clients.filter(function(client){
+        return client.up;
+    }).length > 0;
+}
+
 function getClientFromAction($action) {
     return $action.parents('.client').first();
 }
@@ -52,8 +58,8 @@ function makeList(clientPool) {
     var list = '';
     clientPool.forEach(function (client) {
 
-        var state = client.state == undefined ? 'undefined' : client.state ? 'on' : 'off';
-        list += '<li class="clients-list-item client" client="' + client.id + '"><a data-action="switch" href="" class="client-state ' + clientState[(state + '').toUpperCase()] + ' btn"><i class="fa fa-3x fa-fw fa-power-off"></i></a><span><input class="form-control client-title js-client-title" name="title" data-event="' + socketEvents.CLIENT_CHANGETITLE + '" type="text" value="' + client.title + '" /><input type="text" class="form-control client-url js-client-url" data-event="' + socketEvents.CLIENT_CHANGEURL + '" name="url" value="' + client.url + '" /></span><span class="client-id">' + client.id + '</span></li>'
+        var state = !client.up ? 'undefined' : client.state ? 'on' : 'off';
+        list += '<li class="clients-list-item client" client="' + client.id + '"><a data-action="switch" href="" class="client-state ' + clientState[(state + '').toUpperCase()] + ' btn"><i class="fa fa-3x fa-fw fa-power-off"></i></a><span><input class="form-control client-title js-client-title" name="title" data-event="' + socketEvents.CLIENT_CHANGETITLE + '" type="text" value="' + client.title + '" /><input type="url" class="form-control client-url js-client-url" data-event="' + socketEvents.CLIENT_CHANGEURL + '" name="url" value="' + client.url + '" /></span><span class="client-id">' + client.id + '</span></li>'
     });
 
     $('.js-clients').empty().append(list);

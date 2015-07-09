@@ -29,7 +29,6 @@ function Socket(server) {
                     socketError({id: data.id, message: 'Error on switch TV!'});
                     return;
                 }
-                self.ioServer.emit(socketEvents.CLIENT_UPDATE, data);
             })
         });
 
@@ -42,7 +41,6 @@ function Socket(server) {
                     socketError({id: data.id, message: 'Error on changeUrl!'});
                     return;
                 }
-                self.ioServer.emit(socketEvents.CLIENT_UPDATE, clientData);
             });
         });
 
@@ -55,7 +53,6 @@ function Socket(server) {
                     socketError({id: data.id, message: 'Error on changeTitle!'});
                     return;
                 }
-                self.ioServer.emit(socketEvents.CLIENT_UPDATE, clientData);
             });
         });
 
