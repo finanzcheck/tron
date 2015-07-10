@@ -17,6 +17,9 @@ var clientState = {
     UNDEFINED: 'client-state-undefined disabled'
 };
 
+// initial jquery vars
+var $groups = null;
+
 function getClient(str) {
     return $('[client="' + str + '"]');
 }
@@ -53,8 +56,20 @@ function makeList(clientPool) {
     $('.js-clients').empty().append(list);
 }
 
+function showClients() {
+    var show = location.hash.indexOf('clients') > -1;
+    $groups
+        .toggleClass('visible', show)
+        .toggleClass('hidden', !show);
+}
+
+
 $(function () {
     var $waiting = $('.clients-waiting');
+    $groups = $('.js-groups');
+
+    showClients();
+    window.addEventListener('hashchange', showClients, false);
 
     socket.on('connect', function () {
         socket.emit(socketEvents.CLIENTS_GET);
@@ -133,13 +148,15 @@ $(function () {
 
                 if (this.type == 'url') {
                     var isValideUrl = value.match(/^(ht|f)tps?:\/\/[a-z0-9-\.]+\.[a-z]{2,4}\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/) !== null;
-                    $this.toggleClass('hasError', !isValideUrl);
+                    $this.toggleClass('has-error', !isValideUrl);
                     if (!isValideUrl) {
                         alert("Please enter valid URL!");
                         $this.focus();
                         return;
                     }
                 }
+
+                $this.addClass('has-changed');
 
                 if ($this.data('event') == 'client:changeurl-all') {
                     $(event.target).parents('.clients').first().find('input[data-event="' + socketEvents.CLIENT_CHANGEURL + '"]').each(function () {

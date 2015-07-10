@@ -33,9 +33,13 @@
 
 }
 
-input[type="url"].hasError {
+input.has-error {
   color: @brand-danger;
   border-color: @brand-danger;
+}
+
+input.has-changed {
+  color: @brand-info;
 }
 
 .clients {
@@ -61,6 +65,13 @@ input[type="url"].hasError {
 
   &-main {
     margin-bottom: 15px;
+    order: 1;
+    .pull-right, .pull-left {
+      transition: all .3s;
+    }
+    .hidden ~ & {
+
+    }
   }
 
   &-waiting {
@@ -113,6 +124,32 @@ input[type="url"].hasError {
     padding: 5px;
     &-wrapper {
       clear: both;
+    }
+  }
+
+  &-groups {
+    order: 2;
+    transition: all .5s;
+    opacity: 0;
+    display: block !important;
+    &.visible {
+      opacity: 1;
+      & ~ .clients-groups-toggle {
+        order: 3;
+        display: none;
+      }
+    }
+
+  }
+
+  .clients-groups-toggle {
+    order: 1;
+
+    display: block;
+    text-align: center;
+
+    .btn {
+      display: inline-block;
     }
   }
 }

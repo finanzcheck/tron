@@ -34,7 +34,6 @@ function Socket(server) {
 
         socket.on(socketEvents.CLIENT_CHANGEURL, function (data) {
             debug([socketEvents.CLIENT_CHANGEURL, data]);
-            self.ioServer.emit(socketEvents.CLIENT_PENDING, data.id);
 
             serverService.changeUrl(data.url, data.id, function (err, clientData) {
                 if (err) {
@@ -46,7 +45,6 @@ function Socket(server) {
 
         socket.on(socketEvents.CLIENT_CHANGETITLE, function (data) {
             debug([socketEvents.CLIENT_CHANGETITLE, data]);
-            self.ioServer.emit(socketEvents.CLIENT_PENDING, data.id);
 
             serverService.changeTitle(data.title, data.id, function (err, clientData) {
                 if (err) {
@@ -57,7 +55,9 @@ function Socket(server) {
         });
 
         serverService.getClientPool().on('clientsUpdated', function () {
-            self.ioServer.emit(socketEvents.CLIENTS_LIST, serverService.getClientPool());
+            setTimeout(function(){
+                self.ioServer.emit(socketEvents.CLIENTS_LIST, serverService.getClientPool());
+            }, 3000);
         });
     });
 }

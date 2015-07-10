@@ -1,5 +1,33 @@
 <section class="clients-waiting active"><i class="fa fa-cog fa-spin fa-2x"></i> <span>Waiting for Clients…</span></section>
 <section class="clients">
+    <div class="clients-groups js-groups">
+        <section class="panel panel-default clients clients-group">
+            <header class="panel-heading">
+                <div class="heading">
+                    <h1 class="pull-left h3"><input class="form-control client-title" data-event="groups:title" name="title" value="Default" type="text"/></h1>
+
+                    <div class="pull-right">
+                        <div class="btn-group">
+                            <button type="button" data-action="switch-all" data-type="off" class="btn btn-sm client-state-off"><i class="fa fa-lg fa-fw fa-power-off"></i></button>
+                            <button type="button" data-action="switch-all" data-type="on" class="btn btn-sm client-state-on"><i class="fa fa-lg fa-fw fa-power-off"></i></button>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-default js-button-changeurl-all" data-toggle="collapse" data-target="#group-default" aria-expanded="false" aria-controls="group-default"><i class="fa fa-fw fa-lg fa-terminal"></i> <b>Change Url</b></button>
+                    </div>
+                </div>
+
+                <div class="clients-heading-url-wrapper collapse" id="group-default">
+                    <div class="clients-heading-url"><input class="form-control" data-event="client:changeurl-all" name="url" value="" type="url"></div>
+                </div>
+            </header>
+            <div class="panel-body">
+                <ul class="clients-list js-clients">
+
+                </ul>
+            </div>
+        </section>
+
+    </div>
+
     <header class="clients-main">
         <div class="heading">
             <h1 class="pull-left">Clients</h1>
@@ -17,28 +45,6 @@
         </div>
     </header>
 
-    <section class="panel panel-default clients clients-group">
-        <header class="panel-heading">
-            <div class="heading">
-                <h1 class="pull-left h3">Default</h1>
-                <div class="pull-right">
-                    <div class="btn-group">
-                        <button type="button" data-action="switch-all" data-type="off" class="btn btn-sm client-state-off"><i class="fa fa-lg fa-fw fa-power-off"></i></button>
-                        <button type="button" data-action="switch-all" data-type="on" class="btn btn-sm client-state-on"><i class="fa fa-lg fa-fw fa-power-off"></i></button>
-                    </div>
-                    <button type="button" class="btn btn-sm btn-default js-button-changeurl-all" data-toggle="collapse" data-target="#group-default" aria-expanded="false" aria-controls="group-default"><i class="fa fa-fw fa-lg fa-terminal"></i> <b>Change Url</b></button>
-                </div>
-            </div>
 
-            <div class="clients-heading-url-wrapper collapse" id="group-default">
-                <div class="clients-heading-url"><input class="form-control" data-event="client:changeurl-all" name="url" value="" type="url"></div>
-            </div>
-        </header>
-        <div class="panel-body">
-            <ul class="clients-list js-clients">
-
-            </ul>
-        </div>
-    </section>
-
+    <div class="clients-groups-toggle"><a class="btn btn-default" href="#clients"><i class="fa fa-cog"></i> Settings</a></div>
 </section>
