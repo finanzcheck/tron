@@ -66,12 +66,6 @@ input.has-changed {
   &-main {
     margin-bottom: 15px;
     order: 1;
-    .pull-right, .pull-left {
-      transition: all .3s;
-    }
-    .hidden ~ & {
-
-    }
   }
 
   &-waiting {
@@ -130,10 +124,9 @@ input.has-changed {
   &-groups {
     order: 2;
     transition: all .5s;
-    opacity: 0;
-    display: block !important;
+    display: none;
     &.visible {
-      opacity: 1;
+      display: block;
       & ~ .clients-groups-toggle {
         order: 3;
         display: none;
