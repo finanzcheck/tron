@@ -151,14 +151,14 @@ async.waterfall([
         // if started via sudo (necessary on raspi to get access to GPIOs)
         // we get an environment variable for UID and GID which we can use
         // to lower our privileges
-        var uid = parseInt(process.env.SUDO_UID);
         var gid = parseInt(process.env.SUDO_GID);
-        // Set our server's uid to that user
+        var uid = parseInt(process.env.SUDO_UID);
+
+        if (gid) {
+            process.setgid(gid);
+        }
         if (uid) {
             process.setuid(uid);
-        }
-        if (gid) {
-            process.setgid(uid);
         }
 
         next();
