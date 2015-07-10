@@ -1,11 +1,13 @@
 var net = require('net');
 var mdns = require('mdns');
 var spawn = require('child_process').spawn;
+var exec = require('child_process').exec;
 var async = require('async');
 var client = new net.Socket();
 var chromeCtrl = require('chrome-remote-interface');
 var chromeInstance;
 var conf = require('config');
+var debug = require('debug')('client:client');
 var resolveCluster = require('./lib/mdnsClusterResolver');
 var resolverSequence = [
     mdns.rst.DNSServiceResolve(),
@@ -43,6 +45,32 @@ var protocol = new Protocol({
         console.log('onError', data);
     },
     additional: {
+        selfUpdate: function (data, con) {
+            var child = exec(
+                'git pull',
+                {
+                    cwd: process.cwd(),
+                    uid: process.getuid(),
+                    gid: process.getgid()
+                },
+                function (error, stdout, stderr) {
+                    debug('stdout: ' + stdout);
+                    debug('stderr: ' + stderr);
+
+                    if (error !== null) {
+                        console.log('exec error: ' + error);
+                    }
+                    else {
+                        // stop, environment will get us back up
+                        // as soon as possible
+                        process.exit();
+                    }
+                });
+
+            self.respond(clientState.responseData({
+                token: data.token
+            }), con);
+        },
         navigateUrl: function (data, con) {
             var self = this;
 
