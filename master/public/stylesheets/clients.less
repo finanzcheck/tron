@@ -16,18 +16,25 @@
     .btn {
       vertical-align: middle;
 
-      &-default {
-        .fa {
-          @media (min-width: @screen-xs-min) {
-            display: none;
+      .clients-groups & {
+
+        &-group-config {
+          .btn {
+            border-radius: @btn-border-radius-small;
+
+            &:last-child {
+              display: none;
+            }
           }
+
         }
-        b {
-          @media (max-width: @screen-xs-min) {
-            display: none;
-          }
+
+        &-settings {
+          display: none;
         }
+
       }
+
     }
   }
 
@@ -183,7 +190,8 @@ input.has-changed {
     }
     &[disabled] {
       background: none;
-      opacity: .5;
+      //opacity: .5;
+      cursor: default;
     }
   }
 

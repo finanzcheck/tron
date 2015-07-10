@@ -13,6 +13,9 @@ var socketEvents = require('../../lib/socketEvents');
 var clientState = require('./lib/clientState');
 var Group = require('./model/group');
 
+var showSettings = true;
+var clientPool;
+
 
 function getClient(str) {
     return $('[client="' + str + '"]');
@@ -46,12 +49,19 @@ function makeHTML(clientPool) {
     var headline = 'Clients';
     var groupView = require('./views/group');
 
-    var groups = [
-        new Group(clientPool)
-    ];
+    var defaultGroup = new Group({
+        id: undefined,
+        title: 'Default'
+    }, clientPool.clients);
+
+    var groups = [defaultGroup].concat(clientPool.groups.map(function (group) {
+        return new Group(group, clientPool.clients);
+    }));
 
     var html = require('./views/main')({
         title: headline,
+        settings: showSettings,
+        editable: !showSettings,
         groups: groups
     });
 
@@ -79,7 +89,8 @@ $(function () {
         $waiting.toggleClass('active', true);
     });
 
-    socket.on(socketEvents.CLIENTS_LIST, function (clientPool) {
+    socket.on(socketEvents.CLIENTS_LIST, function (cpool) {
+        clientPool = cpool;
         $waiting.toggleClass('active', clientPool.groups.length <= 0 && clientPool.clients.length <= 0);
 
         makeHTML(clientPool);
@@ -96,7 +107,15 @@ $(function () {
     });
 
     $(document.body)
+        .on('click', '.js-settings', function (event) {
+            showSettings = !showSettings;
+            makeHTML(clientPool);
+            showClients();
+        })
         .on('click', '[data-action]', function (event) {
+            if(!showSettings){
+                return;
+            }
             event.preventDefault();
             event.stopPropagation();
 

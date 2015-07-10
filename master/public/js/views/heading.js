@@ -8,10 +8,13 @@ var str =
                  <button type="button" data-action="switch-all" data-type="off" class="btn btn-lg btn-size client-state-off"><i class="fa fa-lg fa-fw fa-power-off"></i></button>\
                  <button type="button" data-action="switch-all" data-type="on" class="btn btn-lg btn-size client-state-on"><i class="fa fa-lg fa-fw fa-power-off"></i></button>\
              </div>\
-             <button type="button" class="btn btn-lg btn-size btn-default js-button-changeurl-all" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample"><i class="fa fa-fw fa-lg fa-terminal"></i> <b>Change Url</b></button>\
+             <div class="btn-group btn-group-config">\
+                 {{#editable}}<button type="button" class="btn btn-lg btn-size btn-default  js-button-changeurl-all" data-toggle="collapse" data-target="#collapse-{{id}}" aria-expanded="false" aria-controls="collapse-{{id}}"><i class="fa fa-fw fa-lg fa-terminal"></i></button>{{/editable}}\
+                 <button type="button" class="btn btn-lg btn-size btn-default {{^settings}}active{{/settings}} js-settings"><i class="fa fa-fw fa-lg fa-cog"></i></button>\
+             </div>\
          </div>\
      </div>\
-     <div class="clients-heading-url-wrapper collapse" id="collapseExample">\
+     <div class="clients-heading-url-wrapper collapse" id="collapse-{{id}}">\
          <div class="clients-heading-url"><input class="form-control" data-event="client:changeurl-all" name="url" value="" type="url"></div>\
      </div>';
 

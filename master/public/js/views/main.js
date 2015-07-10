@@ -9,7 +9,7 @@ var str =
     <header class="clients-main">\
         {{> heading}}\
     </header>\
-    <div class="clients-groups-toggle"><a class="btn btn-default" href="#clients"><i class="fa fa-cog"></i> Settings</a></div>';
+    <div class="clients-groups-toggle"><a class="btn btn-default" href="#clients"><i class="fa fa-cog"></i> Details</a></div>';
 
 var template = hogan.compile(str);
 var partial = {

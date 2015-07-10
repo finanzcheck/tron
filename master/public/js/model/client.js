@@ -12,7 +12,11 @@ function Client(data) {
     /** @type {String} */
     var group = data.group;
     /** @type {String} */
+    var up = data.up;
+
+    /** @type {String} */
     var state = clientState[((!data.up ? 'undefined' : data.state ? 'on' : 'off') + '').toUpperCase()];
+
     /** @type {Object} */
     var events = {
         title: socketEvents.CLIENT_CHANGETITLE,
@@ -48,6 +52,12 @@ function Client(data) {
             enumerable: true,
             get: function () {
                 return state;
+            }
+        },
+        up: {
+            enumerable: true,
+            get: function () {
+                return up;
             }
         },
         events: {
