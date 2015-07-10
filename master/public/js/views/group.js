@@ -16,13 +16,12 @@ var str =
         </section>';
 
 var template = hogan.compile(str);
+var partial = {
+    heading: require('./heading').template,
+    client: require('./client').template
+};
 
 module.exports = function (data) {
-    var partial = {
-        heading: require('./heading').template,
-        client: require('./client').template
-    };
-
     return template.render(data, partial);
 };
 

@@ -11,11 +11,8 @@ global.socket = require('socket.io-client')(full);
 var socketEvents = require('../../lib/socketEvents');
 
 var clientState = require('./lib/clientState');
+var Group = require('./model/group');
 
-var Client = require('./model/client');
-
-// initial jquery vars
-var $groups = null;
 
 function getClient(str) {
     return $('[client="' + str + '"]');
@@ -44,30 +41,26 @@ function setState($client, state) {
     return clientTogglePending($client, false).removeClass([clientState.OFF, clientState.ON, clientState.UNDEFINED].join(' ')).addClass(clientState[state.toUpperCase()]);
 }
 
-function makeMainHeading(hasUpClients){
 
-}
+function makeHTML(clientPool) {
+    var headline = 'Clients';
+    var groupView = require('./views/group');
 
-function makeList(clientPool) {
-    var view = require('./views/client');
+    var groups = [
+        new Group(clientPool)
+    ];
 
-    var headline = 'Default';
-
-    var clients = clientPool.clients.map(function (client) {
-        return new Client(client);
+    var html = require('./views/main')({
+        title: headline,
+        groups: groups
     });
 
-    var html = require('./views/group')({
-        headline: headline,
-        clients: clients
-    });
-
-    $('.js-groups').empty().append(html);
+    $('.js-clients').empty().append(html);
 }
 
 function showClients() {
     var show = location.hash.indexOf('clients') > -1;
-    $groups
+    $('.js-groups')
         .toggleClass('visible', show)
         .toggleClass('hidden', !show);
 }
@@ -75,9 +68,7 @@ function showClients() {
 
 $(function () {
     var $waiting = $('.clients-waiting');
-    $groups = $('.js-groups');
 
-    showClients();
     window.addEventListener('hashchange', showClients, false);
 
     socket.on('connect', function () {
@@ -91,7 +82,8 @@ $(function () {
     socket.on(socketEvents.CLIENTS_LIST, function (clientPool) {
         $waiting.toggleClass('active', clientPool.groups.length <= 0 && clientPool.clients.length <= 0);
 
-        makeList(clientPool);
+        makeHTML(clientPool);
+        showClients();
     });
 
     socket.on(socketEvents.CLIENT_PENDING, function (client) {

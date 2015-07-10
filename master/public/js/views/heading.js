@@ -2,7 +2,7 @@ var hogan = require("hogan");
 
 var str =
     '<div class="heading"> \
-         <h1 class="pull-left">{{headline}}</h1> \
+         <h1 class="pull-left">{{title}}</h1> \
          <div class="pull-right">\
              <div class="btn-group">\
                  <button type="button" data-action="switch-all" data-type="off" class="btn btn-lg btn-size client-state-off"><i class="fa fa-lg fa-fw fa-power-off"></i></button>\
