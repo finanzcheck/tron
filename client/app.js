@@ -118,6 +118,23 @@ async.waterfall([
             }
         });
     },
+    // fallback to lower privileges
+    function (next) {
+        // if started via sudo (necessary on raspi to get access to GPIOs)
+        // we get an environment variable for UID and GID which we can use
+        // to lower our privileges
+        var uid = parseInt(process.env.SUDO_UID);
+        var gid = parseInt(process.env.SUDO_GID);
+        // Set our server's uid to that user
+        if (uid) {
+            process.setuid(uid);
+        }
+        if (gid) {
+            process.setgid(uid);
+        }
+
+        next();
+    },
     // setup Chrome
     function (next) {
         var args = conf.client.browser.args.concat([conf.client.browser.url]);
