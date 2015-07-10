@@ -79,10 +79,10 @@ $(function () {
         $waiting.toggleClass('active', true);
     });
 
-    socket.on(socketEvents.CLIENTS_LIST, function (clients) {
-        $waiting.toggleClass('active', clients.length <= 0);
+    socket.on(socketEvents.CLIENTS_LIST, function (clientPool) {
+        $waiting.toggleClass('active', clientPool.groups.length <= 0 && clientPool.clients.length <= 0);
 
-        makeList(clients);
+        makeList(clientPool);
     });
 
     socket.on(socketEvents.CLIENT_PENDING, function (client) {
