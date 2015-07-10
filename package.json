@@ -44,6 +44,7 @@
     "chai": "^3.0.0",
     "clean-css": "^3.3.4",
     "font-awesome": "^4.3.0",
+    "hogan": "^1.0.2",
     "istanbul": "^0.3.17",
     "jquery": "^2.1.4",
     "karma": "^0.12.37",

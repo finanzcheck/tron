@@ -55,9 +55,9 @@ function Socket(server) {
         });
 
         serverService.getClientPool().on('clientsUpdated', function () {
-            setTimeout(function(){
+            //setTimeout(function(){
                 self.ioServer.emit(socketEvents.CLIENTS_LIST, serverService.getClientPool());
-            }, 3000);
+            //}, 3000);
         });
     });
 }

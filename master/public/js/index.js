@@ -4,18 +4,15 @@ var $ = jQuery;
 require('bootstrap/js/transition');
 require('bootstrap/js/collapse');
 
+
 var full = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
 global.socket = require('socket.io-client')(full);
 
 var socketEvents = require('../../lib/socketEvents');
 
-var clientState = {
-    PENDING: 'client-state-pending active',
-    ON: 'client-state-on',
-    OFF: 'client-state-off',
-    ERROR: 'client-state-error',
-    UNDEFINED: 'client-state-undefined disabled'
-};
+var clientState = require('./lib/clientState');
+
+var Client = require('./model/client');
 
 // initial jquery vars
 var $groups = null;
@@ -47,13 +44,25 @@ function setState($client, state) {
     return clientTogglePending($client, false).removeClass([clientState.OFF, clientState.ON, clientState.UNDEFINED].join(' ')).addClass(clientState[state.toUpperCase()]);
 }
 
-function makeList(clientPool) {
-    var list = clientPool.clients.reduce(function (carry, client) {
-        var state = !client.up ? 'undefined' : client.state ? 'on' : 'off';
-        return '<li class="clients-list-item client" client="' + client.id + '"><a data-action="switch" href="" class="client-state ' + clientState[(state + '').toUpperCase()] + ' btn"><i class="fa fa-3x fa-fw fa-power-off"></i></a><span><input class="form-control client-title js-client-title" name="title" data-event="' + socketEvents.CLIENT_CHANGETITLE + '" type="text" value="' + client.title + '" /><input type="url" class="form-control client-url js-client-url" data-event="' + socketEvents.CLIENT_CHANGEURL + '" name="url" value="' + client.url + '" /></span><span class="client-id">' + client.id + '</span></li>'
-    }, '');
+function makeMainHeading(hasUpClients){
 
-    $('.js-clients').empty().append(list);
+}
+
+function makeList(clientPool) {
+    var view = require('./views/client');
+
+    var headline = 'Default';
+
+    var clients = clientPool.clients.map(function (client) {
+        return new Client(client);
+    });
+
+    var html = require('./views/group')({
+        headline: headline,
+        clients: clients
+    });
+
+    $('.js-groups').empty().append(html);
 }
 
 function showClients() {
