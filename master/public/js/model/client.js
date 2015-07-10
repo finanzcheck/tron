@@ -1,7 +1,7 @@
 var socketEvents = require('../../../lib/socketEvents');
 var clientState = require('../lib/clientState');
 
-function Client(data){
+function Client(data) {
 
     /** @type {String} */
     var id = data.id;
@@ -9,7 +9,8 @@ function Client(data){
     var url = data.url;
     /** @type {String} */
     var title = data.title;
-
+    /** @type {String} */
+    var group = data.group;
     /** @type {String} */
     var state = clientState[((!data.up ? 'undefined' : data.state ? 'on' : 'off') + '').toUpperCase()];
     /** @type {Object} */
@@ -18,8 +19,7 @@ function Client(data){
         url: socketEvents.CLIENT_CHANGEURL
     };
 
-    var self = this;
-        Object.defineProperties(this, {
+    Object.defineProperties(this, {
         id: {
             enumerable: true,
             get: function () {
@@ -36,6 +36,12 @@ function Client(data){
             enumerable: true,
             get: function () {
                 return title;
+            }
+        },
+        group: {
+            enumerable: true,
+            get: function () {
+                return group;
             }
         },
         state: {

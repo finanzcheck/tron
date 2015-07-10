@@ -164,7 +164,8 @@ ClientPool.prototype.toJSON = function () {
 
 /**
  *
- * @param clients
+ * @param   {Array} clients
+ * @param   {Array} groups
  * @returns {ClientPool}
  */
 ClientPool.fromArray = function (clients, groups) {
