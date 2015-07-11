@@ -5,6 +5,8 @@ module.exports = {
     CLIENT_PENDING: 'client:pending',
     CLIENT_UPDATE: 'client:update',
     CLIENT_CHANGEURL: 'client:changeurl',
+    CLIENT_CHANGEPANICURL: 'client:changepanicurl',
+    CLIENT_CHANGEPANICSTATE: 'client:changepanicstate',
     CLIENT_CHANGETITLE: 'client:changetitle',
     GROUP_CHANGETITLE: 'group:changetitle',
     ERROR: 'error'

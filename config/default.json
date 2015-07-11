@@ -16,7 +16,7 @@
         "--remote-debugging-port=9222",
         "--user-data-dir=remote-profile"
       ],
-      "url": "https://www.finanzcheck.de/"
+      "url": "about:blank"
     },
     "io": {
       "tv": 11

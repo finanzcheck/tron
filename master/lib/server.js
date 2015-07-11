@@ -23,7 +23,7 @@ var server = net.createServer();
 var protocol = new Protocol({
     onGreeting: function (data, con) {
         var self = this;
-        var client = clientPool.getById(data.id);
+        var client = clientPool.getClientById(data.id);
 
         if (client) {
             client.state = data.state;
@@ -35,26 +35,17 @@ var protocol = new Protocol({
 
         client.socket = con;
 
-        self.greetBack({token: data.token}, con);
+        self.greetBack(client.responseData({token: data.token}), client.socket);
     },
     onReceipt: function (data, con) {
         // update client-state
         if (data && data.id) {
-            var client = clientPool.getById(data.id);
+            var client = clientPool.getClientById(data.id);
 
             if (client) {
                 client.update(data);
             }
         }
-    },
-    onRequest: function (data, con) {
-        console.log('onRequest', data);
-    },
-    onPassage: function (data, con) {
-        console.log('onPassage', data);
-    },
-    onError: function (data, con) {
-        console.log('onError', data);
     }
 });
 
@@ -111,7 +102,47 @@ module.exports = {
             client.url = url;
 
             if (client.up) {
-                protocol.requestNavigateUrl(url, client.socket, cb);
+                protocol.requestSetUrl(url, client.socket, cb);
+            }
+            else {
+                cb(null, client);
+            }
+        } catch (e) {
+            cb(e);
+        }
+    },
+    /**
+     * @param {String}   url
+     * @param {String}   which
+     * @param {Function} cb
+     */
+    changePanicUrl: function (url, which, cb) {
+        try {
+            var client = this.getClient(which, true);
+            client.url = url;
+
+            if (client.up) {
+                protocol.requestSetPanicUrl(url, client.socket, cb);
+            }
+            else {
+                cb(null, client);
+            }
+        } catch (e) {
+            cb(e);
+        }
+    },
+    /**
+     * @param {String}   state
+     * @param {String}   which
+     * @param {Function} cb
+     */
+    setPanicState: function (state, which, cb) {
+        try {
+            var client = this.getClient(which, true);
+            client.url = state;
+
+            if (client.up) {
+                protocol.requestSetPanicState(state, client.socket, cb);
             }
             else {
                 cb(null, client);
@@ -131,6 +162,22 @@ module.exports = {
             client.title = title;
 
             cb(null, client);
+        }
+        catch (e) {
+            cb(e);
+        }
+    },
+    /**
+     * @param {String}   title
+     * @param {String}   which
+     * @param {Function} cb
+     */
+    changeGroupTitle: function (title, which, cb) {
+        try {
+            var group = this.getGroup(which);
+            group.title = title;
+
+            cb(null, group);
         }
         catch (e) {
             cb(e);
@@ -157,7 +204,7 @@ module.exports = {
      * @return {Client}
      */
     getClient: function (id, includeOffline) {
-        var client = clientPool.getById(id);
+        var client = clientPool.getClientById(id);
 
         if (client) {
             if (client.up || includeOffline) {
@@ -169,6 +216,21 @@ module.exports = {
         }
         else {
             throw new Error('Client not found!');
+        }
+    },
+    /**
+     * @param  {String}  id
+     *
+     * @return {Client}
+     */
+    getGroup: function (id) {
+        var group = clientPool.getGroupById(id);
+
+        if (group) {
+            return group;
+        }
+        else {
+            throw new Error('Group not found!');
         }
     },
     /**

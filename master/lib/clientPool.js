@@ -146,8 +146,19 @@ ClientPool.prototype.remove = function (client) {
  * @param   {String} id
  * @returns {Client}
  */
-ClientPool.prototype.getById = function (id) {
+ClientPool.prototype.getClientById = function (id) {
     return this.clients.find(function (client) {
+        return client.id == id;
+    });
+};
+
+/**
+ *
+ * @param   {String} id
+ * @returns {Group}
+ */
+ClientPool.prototype.getGroupById = function (id) {
+    return this.groups.find(function (client) {
         return client.id == id;
     });
 };

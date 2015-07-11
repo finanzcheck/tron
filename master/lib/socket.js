@@ -27,7 +27,6 @@ function Socket(server) {
             serverService.switchTV(data.state, data.id, function (err) {
                 if (err) {
                     socketError({id: data.id, message: 'Error on switch TV!'});
-                    return;
                 }
             })
         });
@@ -35,10 +34,29 @@ function Socket(server) {
         socket.on(socketEvents.CLIENT_CHANGEURL, function (data) {
             debug([socketEvents.CLIENT_CHANGEURL, data]);
 
-            serverService.changeUrl(data.url, data.id, function (err, clientData) {
+            serverService.changeUrl(data.url, data.id, function (err) {
                 if (err) {
                     socketError({id: data.id, message: 'Error on changeUrl!'});
-                    return;
+                }
+            });
+        });
+
+        socket.on(socketEvents.CLIENT_CHANGEPANICURL, function (data) {
+            debug([socketEvents.CLIENT_CHANGEPANICURL, data]);
+
+            serverService.changePanicUrl(data.url, data.id, function (err) {
+                if (err) {
+                    socketError({id: data.id, message: 'Error on changeUrl!'});
+                }
+            });
+        });
+
+        socket.on(socketEvents.CLIENT_CHANGEPANICSTATE, function (data) {
+            debug([socketEvents.CLIENT_CHANGEPANICSTATE, data]);
+
+            serverService.setPanicState(data.panicState, data.id, function (err) {
+                if (err) {
+                    socketError({id: data.id, message: 'Error on changeUrl!'});
                 }
             });
         });
@@ -46,10 +64,9 @@ function Socket(server) {
         socket.on(socketEvents.CLIENT_CHANGETITLE, function (data) {
             debug([socketEvents.CLIENT_CHANGETITLE, data]);
 
-            serverService.changeTitle(data.title, data.id, function (err, clientData) {
+            serverService.changeTitle(data.title, data.id, function (err) {
                 if (err) {
                     socketError({id: data.id, message: 'Error on changeTitle!'});
-                    return;
                 }
             });
         });
@@ -57,19 +74,15 @@ function Socket(server) {
         socket.on(socketEvents.GROUP_CHANGETITLE, function (data) {
             debug([socketEvents.GROUP_CHANGETITLE, data]);
 
-            //TODO implement serverService
-            //serverService.changeTitle(data.title, data.id, function (err, clientData) {
-            //    if (err) {
-            //        socketError({id: data.id, message: 'Error on changeTitle!'});
-            //        return;
-            //    }
-            //});
+            serverService.changeGroupTitle(data.title, data.id, function (err) {
+                if (err) {
+                    socketError({id: data.id, message: 'Error on changeTitle!'});
+                }
+            });
         });
 
         serverService.getClientPool().on('clientsUpdated', function () {
-            //setTimeout(function(){
-                self.ioServer.emit(socketEvents.CLIENTS_LIST, serverService.getClientPool());
-            //}, 3000);
+            self.ioServer.emit(socketEvents.CLIENTS_LIST, serverService.getClientPool());
         });
     });
 }

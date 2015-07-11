@@ -7,7 +7,7 @@ var client = new net.Socket();
 var chromeCtrl = require('chrome-remote-interface');
 var chromeInstance;
 var conf = require('config');
-var debug = require('debug')('client:client');
+var debug = require('debug')('client:app');
 var resolveCluster = require('./lib/mdnsClusterResolver');
 var resolverSequence = [
     mdns.rst.DNSServiceResolve(),
@@ -28,7 +28,40 @@ var clientState = new Client({
     url: conf.client.browser.url
 });
 
+clientState.on('needToNavigate', function (url) {
+    if (chromeInstance) {
+        chromeInstance.Page.navigate({
+            url: url
+        }, function (err) {
+            if (err) {
+                debug(err);
+            }
+            else {
+                clientState.emit('change');
+            }
+        });
+    }
+    else {
+        debug('Cannot connect to Chrome');
+    }
+});
+clientState.on('needToSwitch', function (state) {
+    gpio.write(conf.client.io.tv, state, function (err) {
+        if (err) {
+            debug(err);
+        }
+        else {
+            clientState.emit('change');
+        }
+    });
+});
+
 var protocol = new Protocol({
+    onGreeting: function (data, con) {
+        // server acknowledged our existence
+        debug(data);
+        clientState.update(data);
+    },
     onRequest: function (data, con) {
         this.emit(data.action, data, con);
     },
@@ -63,45 +96,40 @@ var protocol = new Protocol({
          * @param {Object}     data
          * @param {net.Socket} con
          */
-        navigateUrl: function (data, con) {
+        setUrl: function (data, con) {
             var self = this;
 
             clientState.url = data.url;
 
-            if (chromeInstance) {
-                chromeInstance.Page.navigate({
-                    url: clientState.url
-                });
-
-                self.respond(clientState.responseData({
-                    token: data.token
-                }), con);
-            }
-            else {
-                self.error(clientState.responseData({
-                    token: data.token,
-                    message: 'Cannot connect to Chrome'
-                }), con);
-            }
+            self.respond(clientState.responseData({
+                token: data.token
+            }), con);
         },
+        /**
+         * @param {Object}     data
+         * @param {net.Socket} con
+         */
+        setPanicUrl: function (data, con) {
+            var self = this;
+
+            clientState.panicUrl = data.url;
+
+            self.respond(clientState.responseData({
+                token: data.token
+            }), con);
+        },
+        /**
+         * @param {Object}     data
+         * @param {net.Socket} con
+         */
         switchTV: function (data, con) {
             var self = this;
 
             clientState.state = data.state;
 
-            gpio.write(conf.client.io.tv, clientState.state, function (err) {
-                if (err) {
-                    self.error(clientState.responseData({
-                        token: data.token,
-                        message: err
-                    }), con);
-                }
-                else {
-                    self.respond(clientState.responseData({
-                        token: data.token
-                    }), con);
-                }
-            });
+            self.respond(clientState.responseData({
+                token: data.token
+            }), con);
         }
     }
 });
