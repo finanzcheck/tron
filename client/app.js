@@ -29,20 +29,8 @@ var clientState = new Client({
 });
 
 var protocol = new Protocol({
-    onGreeting: function (data, con) {
-        // server acknowledged our existence
-    },
-    onReceipt: function (data, con) {
-        console.log('onReceipt', data);
-    },
     onRequest: function (data, con) {
         this.emit(data.action, data, con);
-    },
-    onPassage: function (data, con) {
-        console.log('onPassage', data);
-    },
-    onError: function (data, con) {
-        console.log('onError', data);
     },
     additional: {
         selfUpdate: function (data, con) {
@@ -71,6 +59,10 @@ var protocol = new Protocol({
                 token: data.token
             }), con);
         },
+        /**
+         * @param {Object}     data
+         * @param {net.Socket} con
+         */
         navigateUrl: function (data, con) {
             var self = this;
 
@@ -115,7 +107,6 @@ var protocol = new Protocol({
 });
 
 var mdnsBrowser = mdns.createBrowser(mdns.tcp(conf.protocol.name), {resolverSequence: resolverSequence});
-
 var services = new ServicePool(client, mdnsBrowser);
 
 client.on('connect', function () {
