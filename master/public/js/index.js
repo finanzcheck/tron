@@ -59,11 +59,15 @@ function makeHTML(clientPool) {
     }));
 
     var html = require('./views/main')({
-        title: headline,
-        settings: showSettings,
-        editable: !showSettings,
-        groups: groups
-    });
+            title: headline,
+            settings: showSettings,
+            editable: !showSettings,
+            groups: groups,
+            up: groups.reduce(function (carry, group) {
+                return carry || !!group.up;
+            }, false)
+        })
+        ;
 
     $('.js-clients').empty().append(html);
 }
@@ -113,7 +117,7 @@ $(function () {
             showClients();
         })
         .on('click', '[data-action]', function (event) {
-            if(!showSettings){
+            if (!showSettings) {
                 return;
             }
             event.preventDefault();
@@ -135,7 +139,7 @@ $(function () {
                     });
                     break;
                 case 'switch-all':
-                    $('.client').each(function (client) {
+                    $(event.target).parents('.clients').first().find('.client').not('[disabled]').each(function (client) {
                         var id = $(this).attr('client');
                         socket.emit(socketEvents.CLIENT_SWITCH, {
                             id: id,
