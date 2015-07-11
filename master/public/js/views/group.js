@@ -19,7 +19,7 @@ var str =
 
 var template = hogan.compile(str);
 var partial = {
-    heading: require('./heading').template,
+    subheading: require('./heading').template,
     client: require('./client').template
 };
 

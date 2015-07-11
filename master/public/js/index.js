@@ -150,7 +150,6 @@ $(function () {
         })
         .on('focus blur keyup', '.form-control', function (event) {
             var $this = $(this);
-            var $client = getClientFromAction($this);
             var value = this.value;
 
             if (event.type == 'keyup') {
@@ -187,7 +186,7 @@ $(function () {
                     $(event.target).parents('.clients').first().find('.js-button-changeurl-all').trigger('click');
 
                 } else {
-                    var data = {id: $client.attr('client')};
+                    var data = {id: $this.data('id')};
                     data[this.name] = value;
                     socket.emit($this.data('event'), data);
                 }

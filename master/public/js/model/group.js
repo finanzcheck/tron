@@ -38,12 +38,6 @@ function Group(group, poolClients) {
                 return id;
             }
         },
-        settings: {
-            enumerable: true,
-            get: function () {
-                false;
-            }
-        },
         clients: {
             enumerable: true,
             get: function () {

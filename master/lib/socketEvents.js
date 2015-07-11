@@ -6,5 +6,6 @@ module.exports = {
     CLIENT_UPDATE: 'client:update',
     CLIENT_CHANGEURL: 'client:changeurl',
     CLIENT_CHANGETITLE: 'client:changetitle',
+    GROUP_CHANGETITLE: 'group:changetitle',
     ERROR: 'error'
 };

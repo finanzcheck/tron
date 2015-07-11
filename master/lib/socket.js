@@ -54,6 +54,18 @@ function Socket(server) {
             });
         });
 
+        socket.on(socketEvents.GROUP_CHANGETITLE, function (data) {
+            debug([socketEvents.GROUP_CHANGETITLE, data]);
+
+            //TODO implement serverService
+            //serverService.changeTitle(data.title, data.id, function (err, clientData) {
+            //    if (err) {
+            //        socketError({id: data.id, message: 'Error on changeTitle!'});
+            //        return;
+            //    }
+            //});
+        });
+
         serverService.getClientPool().on('clientsUpdated', function () {
             //setTimeout(function(){
                 self.ioServer.emit(socketEvents.CLIENTS_LIST, serverService.getClientPool());
