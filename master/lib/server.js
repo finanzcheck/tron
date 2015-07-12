@@ -26,7 +26,10 @@ var protocol = new Protocol({
         var client = clientPool.getClientById(data.id);
 
         if (client) {
-            client.state = data.state;
+            var group = clientPool.getGroupById(client.group);
+            if (group && undefined !== group.state) {
+                client.state = group.state;
+            }
         }
         else {
             client = new Client(data);

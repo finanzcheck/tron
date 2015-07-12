@@ -3,6 +3,7 @@ var Client = require('../../lib/client');
 var Group = require('../../lib/group');
 var Cache = require('./cache');
 var EventEmitter = require('events').EventEmitter;
+var moment = require('moment-timezone');
 
 require('array.prototype.find');
 
@@ -54,8 +55,47 @@ ClientPool.prototype._initCached = function () {
         }
 
         if (cached) {
-            initCache('groups', Group, self._updateGroupHandler);
             initCache('clients', Client, self._updateClientHandler);
+            initCache('groups', Group, self._updateGroupHandler);
+
+            self.groups.forEach(function (group) {
+                group.on('switch', self._switchGroupHandler.bind(self));
+                // find missed cronjobs
+                var now = moment();
+                var today = now.format('YYYY-MM-DD 00:00:00');
+                var findClosest = function (carry, job) {
+                    var execDate = job.cronTime._getNextDateFrom(today);
+                    // is same day?
+                    if (execDate.format('YYYY-MM-DD') === now.format('YYYY-MM-DD')) {
+                        var diff = now.diff(execDate, 'seconds');
+                        // diff lt 0 is some time in the future
+                        if (diff >= 0 && (false === carry || diff < carry)) {
+                            return diff;
+                        }
+                    }
+
+                    return carry;
+                };
+                var shouldHaveBeenOn = group.onSchedules.reduce(findClosest, false);
+                var shouldHaveBeenOff = group.offSchedules.reduce(findClosest, false);
+                // if there is no indication for a
+                // missed cronjob don't do anything
+                if (false !== shouldHaveBeenOn || false !== shouldHaveBeenOff) {
+                    // missed off-cronjob
+                    if (false === shouldHaveBeenOn && false !== shouldHaveBeenOff) {
+                        group.emit('switch', group, false);
+                    }
+                    // missed on-cronjob
+                    else if (false !== shouldHaveBeenOn && false === shouldHaveBeenOff) {
+                        group.emit('switch', group, true);
+                    }
+                    // missed at least on of each, find out what the last one was
+                    else {
+                        // emit the state based on the event which is missed most recently
+                        group.emit('switch', group, shouldHaveBeenOn < shouldHaveBeenOff);
+                    }
+                }
+            });
         }
     }
 };
@@ -83,6 +123,17 @@ ClientPool.prototype._updateClientHandler = function () {
 ClientPool.prototype._updateGroupHandler = function () {
     this._updateCache();
     this.emit('groupsUpdated');
+};
+
+/**
+ * @param {Group}   group
+ * @param {Boolean} state
+ * @private
+ */
+ClientPool.prototype._switchGroupHandler = function (group, state) {
+    this.getClientsByGroupId(group.id).forEach(function (client) {
+        client.state = state;
+    });
 };
 
 /**
@@ -117,6 +168,7 @@ ClientPool.prototype.addGroup = function (items) {
 
         if (group instanceof Group) {
             group.on('change', this._updateGroupHandler.bind(self));
+            group.on('switch', this._switchGroupHandler.bind(self));
         }
     }
 
@@ -139,6 +191,16 @@ ClientPool.prototype.remove = function (client) {
     }
 
     return spliced;
+};
+
+/**
+ * @param  {String} groupId
+ * @return {Array.<Client>}
+ */
+ClientPool.prototype.getClientsByGroupId = function (groupId) {
+    return this.clients.filter(function (client) {
+        return client.group === groupId;
+    });
 };
 
 /**
