@@ -2,8 +2,7 @@ var hogan = require("hogan");
 var viewHeading = require("./heading");
 
 var str =
-    '{{#clients.length}}\
-     <section class="panel panel-default clients clients-group">\
+    '<section id="group-{{id}}" class="panel panel-default clients clients-group">\
         <header class="panel-heading">\
             {{> heading}}\
         </header>\
@@ -14,8 +13,7 @@ var str =
             {{/clients}}\
             </ul>\
         </div>\
-    </section>\
-    {{/clients.length}}';
+    </section>';
 
 var template = hogan.compile(str);
 var partial = {

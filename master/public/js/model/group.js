@@ -8,7 +8,7 @@ function Group(group, poolClients) {
     /** @type {Array} */
     var clients = poolClients
         .filter(function (client) {
-            return client.group == group.id;
+            return group.id == (client.group || 'undefined');
         })
         .map(function (client) {
             return new Client(client);

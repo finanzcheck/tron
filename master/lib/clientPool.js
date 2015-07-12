@@ -164,9 +164,7 @@ ClientPool.prototype.getGroupById = function (id) {
 };
 
 /**
- * @returns {Object} clientPool
- * @returns {Array.<Group>} clientPool.groups
- * @returns {Array.<Client>} clientPool.clients
+ * @returns {{groups: Array.<Group>, clients: Array.<Client>}}
  */
 ClientPool.prototype.toJSON = function () {
     return {

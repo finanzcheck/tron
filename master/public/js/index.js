@@ -50,7 +50,7 @@ function makeHTML(clientPool) {
     var groupView = require('./views/group');
 
     var defaultGroup = new Group({
-        id: undefined,
+        id: "undefined",
         title: 'New Clients',
         isDefault: true
     }, clientPool.clients);
@@ -60,6 +60,7 @@ function makeHTML(clientPool) {
     }));
 
     var html = require('./views/main')({
+            id: 'all',
             title: headline,
             settings: showSettings,
             editable: !showSettings,
