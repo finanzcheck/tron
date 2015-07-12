@@ -3,6 +3,7 @@ var Client = require('../../lib/client');
 var Group = require('../../lib/group');
 var Cache = require('./cache');
 var EventEmitter = require('events').EventEmitter;
+var moment = require('moment-timezone');
 
 require('array.prototype.find');
 
@@ -59,6 +60,41 @@ ClientPool.prototype._initCached = function () {
 
             self.groups.forEach(function (group) {
                 group.on('switch', self._switchGroupHandler.bind(self));
+                // find missed cronjobs
+                var now = moment();
+                var today = now.format('YYYY-MM-DD 00:00:00');
+                var findClosest = function (carry, job) {
+                    var execDate = job.cronTime._getNextDateFrom(today);
+                    // is same day?
+                    if (execDate.format('YYYY-MM-DD') === now.format('YYYY-MM-DD')) {
+                        var diff = now.diff(execDate, 'seconds');
+                        // diff lt 0 is some time in the future
+                        if (diff >= 0 && (false === carry || diff < carry)) {
+                            return diff;
+                        }
+                    }
+
+                    return carry;
+                };
+                var shouldHaveBeenOn = group.onSchedules.reduce(findClosest, false);
+                var shouldHaveBeenOff = group.offSchedules.reduce(findClosest, false);
+                // if there is no indication for a
+                // missed cronjob don't do anything
+                if (false !== shouldHaveBeenOn || false !== shouldHaveBeenOff) {
+                    // missed off-cronjob
+                    if (false === shouldHaveBeenOn && false !== shouldHaveBeenOff) {
+                        group.emit('switch', group, false);
+                    }
+                    // missed on-cronjob
+                    else if (false !== shouldHaveBeenOn && false === shouldHaveBeenOff) {
+                        group.emit('switch', group, true);
+                    }
+                    // missed at least on of each, find out what the last one was
+                    else {
+                        // emit the state based on the event which is missed most recently
+                        group.emit('switch', group, shouldHaveBeenOn < shouldHaveBeenOff);
+                    }
+                }
             });
         }
     }
