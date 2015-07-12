@@ -54,8 +54,12 @@ ClientPool.prototype._initCached = function () {
         }
 
         if (cached) {
-            initCache('groups', Group, self._updateGroupHandler);
             initCache('clients', Client, self._updateClientHandler);
+            initCache('groups', Group, self._updateGroupHandler);
+
+            self.groups.forEach(function (group) {
+                group.on('switch', self._switchGroupHandler.bind(self));
+            });
         }
     }
 };
@@ -83,6 +87,17 @@ ClientPool.prototype._updateClientHandler = function () {
 ClientPool.prototype._updateGroupHandler = function () {
     this._updateCache();
     this.emit('groupsUpdated');
+};
+
+/**
+ * @param {Group}   group
+ * @param {Boolean} state
+ * @private
+ */
+ClientPool.prototype._switchGroupHandler = function (group, state) {
+    this.getClientsByGroupId(group.id).forEach(function (client) {
+        client.state = state;
+    });
 };
 
 /**
@@ -117,6 +132,7 @@ ClientPool.prototype.addGroup = function (items) {
 
         if (group instanceof Group) {
             group.on('change', this._updateGroupHandler.bind(self));
+            group.on('switch', this._switchGroupHandler.bind(self));
         }
     }
 
@@ -139,6 +155,16 @@ ClientPool.prototype.remove = function (client) {
     }
 
     return spliced;
+};
+
+/**
+ * @param  {String} groupId
+ * @return {Array.<Client>}
+ */
+ClientPool.prototype.getClientsByGroupId = function (groupId) {
+    return this.clients.filter(function (client) {
+        return client.group === groupId;
+    });
 };
 
 /**
