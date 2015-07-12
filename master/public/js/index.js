@@ -51,7 +51,8 @@ function makeHTML(clientPool) {
 
     var defaultGroup = new Group({
         id: undefined,
-        title: 'Default'
+        title: 'New Clients',
+        isDefault: true
     }, clientPool.clients);
 
     var groups = [defaultGroup].concat(clientPool.groups.map(function (group) {

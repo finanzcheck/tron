@@ -84,6 +84,10 @@ function Socket(server) {
         serverService.getClientPool().on('clientsUpdated', function () {
             self.ioServer.emit(socketEvents.CLIENTS_LIST, serverService.getClientPool());
         });
+
+        serverService.getClientPool().on('groupsUpdated', function () {
+            self.ioServer.emit(socketEvents.CLIENTS_LIST, serverService.getClientPool());
+        });
     });
 }
 
