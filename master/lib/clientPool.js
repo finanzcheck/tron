@@ -131,9 +131,11 @@ ClientPool.prototype._updateGroupHandler = function () {
  * @private
  */
 ClientPool.prototype._switchGroupHandler = function (group, state) {
-    this.getClientsByGroupId(group.id).forEach(function (client) {
+    var clients = this.getClientsByGroupId(group.id);
+    clients.forEach(function (client) {
         client.state = state;
     });
+    this.emit('clientsSwitched', clients);
 };
 
 /**

@@ -52,6 +52,14 @@ var protocol = new Protocol({
     }
 });
 
+clientPool.on('clientsSwitched', function (clients) {
+    clients.forEach(function (client) {
+        if (client.up) {
+            protocol.requestSwitchTV(client.state, client.socket);
+        }
+    });
+});
+
 server.on('connection', function (c) {
     console.log('client connected');
     c.on('end', function () {
