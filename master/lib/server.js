@@ -150,7 +150,7 @@ module.exports = {
     setPanicState: function (state, which, cb) {
         try {
             var client = this.getClient(which, true);
-            client.url = state;
+            client.panicState = state;
 
             if (client.up) {
                 protocol.requestSetPanicState(state, client.socket, cb);

@@ -16,6 +16,7 @@ var Group = require('./model/group');
 var showSettings = true;
 var clientPool;
 
+var doc = window.document.documentElement;
 
 function getClient(str) {
     return $('[client="' + str + '"]');
@@ -47,7 +48,6 @@ function setState($client, state) {
 
 function makeHTML(clientPool) {
     var headline = 'Clients';
-    var groupView = require('./views/group');
 
     var defaultGroup = new Group({
         id: "undefined",
@@ -67,15 +67,28 @@ function makeHTML(clientPool) {
             groups: groups,
             up: groups.reduce(function (carry, group) {
                 return carry || !!group.up;
-            }, false)
+            }, false),
+            panicState: clientPool.clients.filter(function (client) {
+                return !!client.panicState;
+            }).length == clientPool.clients.length
         })
         ;
 
     $('.js-clients').empty().append(html);
 }
 
+function toggleShowSettings() {
+    $(doc)
+        .toggleClass('show-settings', !showSettings)
+        .toggleClass('hidden-settings', showSettings);
+}
+
 function showClients() {
     var show = location.hash.indexOf('clients') > -1;
+    $(doc)
+        .toggleClass('show-clients', show)
+        .toggleClass('hidden-clients', !show);
+
     $('.js-groups')
         .toggleClass('visible', show)
         .toggleClass('hidden', !show);
@@ -100,6 +113,8 @@ $(function () {
         $waiting.toggleClass('active', clientPool.groups.length <= 0 && clientPool.clients.length <= 0);
 
         makeHTML(clientPool);
+        toggleShowSettings();
+
         showClients();
     });
 
@@ -116,12 +131,10 @@ $(function () {
         .on('click', '.js-settings', function (event) {
             showSettings = !showSettings;
             makeHTML(clientPool);
+            toggleShowSettings();
             showClients();
         })
         .on('click', '[data-action]', function (event) {
-            if (!showSettings) {
-                return;
-            }
             event.preventDefault();
             event.stopPropagation();
 
@@ -146,6 +159,16 @@ $(function () {
                         socket.emit(socketEvents.CLIENT_SWITCH, {
                             id: id,
                             state: $this.data('type') == 'on'
+                        });
+                    });
+                    break;
+                case 'switch-panic':
+                    $(event.target).parents('.clients').first().find('.client').each(function (client) {
+                        var id = $(this).attr('client');
+                        console.debug($this, this);
+                        socket.emit(socketEvents.CLIENT_CHANGEPANICSTATE, {
+                            id: id,
+                            panicState: $this.data('type') == 'off'
                         });
                     });
                     break;

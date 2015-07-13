@@ -12,6 +12,8 @@ function Client(data) {
     var group = data.group;
     /** @type {String} */
     var up = data.up;
+    /** @type {Boolean} */
+    var panicState = data.panicState;
 
     /** @type {String} */
     var state = clientState[((!data.up ? 'undefined' : data.state ? 'on' : 'off') + '').toUpperCase()];
@@ -45,6 +47,12 @@ function Client(data) {
             enumerable: true,
             get: function () {
                 return state;
+            }
+        },
+        panicState: {
+            enumerable: true,
+            get: function () {
+                return panicState;
             }
         },
         up: {

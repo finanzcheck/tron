@@ -21,7 +21,9 @@ function Group(group, poolClients) {
     var panicUrl = group.panicUrl;
 
     /** @type {Boolean} */
-    var panicState = group.panicState;
+    var panicState = clients.reduce(function (carry, client) {
+        return carry || !!client.panicState;
+    }, false);
 
     /** @type {String} */
     var state = 'true';
@@ -66,22 +68,14 @@ function Group(group, poolClients) {
             enumerable: true,
             get: function () {
                 return panicUrl;
-            },
-            set: function (val) {
-                panicUrl = val;
-                this.emit('change');
             }
         },
         panicState: {
             enumerable: true,
             get: function () {
-                return panicUrl;
-            },
-            set: function (val) {
-                panicUrl = !!val;
-                this.emit('change', panicState);
+                return panicState;
             }
-        },
+        }
     });
 }
 

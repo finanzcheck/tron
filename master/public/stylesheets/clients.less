@@ -50,6 +50,20 @@
 
       }
 
+      &.panic-state {
+        &[data-type="on"] {
+          .fa {
+            color: @brand-success;
+          }
+        }
+
+        &[data-type="off"] {
+          .fa {
+            color: @brand-danger;
+          }
+        }
+      }
+
     }
   }
 
