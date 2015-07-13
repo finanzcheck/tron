@@ -147,7 +147,7 @@ $(function () {
                     });
                     break;
                 case 'switch-all':
-                    $(event.target).parents('.clients').first().find('.client').not('[disabled]').each(function (client) {
+                    $(event.target).findGroup().find('.client').not('[disabled]').each(function (client) {
                         var id = $(this).attr('client');
                         socket.emit(socketEvents.CLIENT_SWITCH, {
                             id: id,
@@ -197,12 +197,12 @@ $(function () {
                 $this.addClass('has-changed');
 
                 if ($this.data('event') == 'client:changeurl-all') {
-                    $(event.target).parents('.clients').first().find('input[data-event="' + socketEvents.CLIENT_CHANGEURL + '"]').each(function () {
+                    $(event.target).findGroup().find('input[data-event="' + socketEvents.CLIENT_CHANGEURL + '"]').each(function () {
                         this.value = value;
                         $(this).trigger('blur');
                     });
 
-                    $(event.target).parents('.clients').first().find('.js-button-changeurl-all').trigger('click');
+                    $(event.target).findGroup().find('.js-button-changeurl-all').trigger('click');
 
                 } else if ($this.data('event') == socketEvents.GROUP_CHANGETITLE) {
                     if ($this.data('id').indexOf('undefined') > -1) {
