@@ -28,27 +28,23 @@
     align-self: flex-end;
     white-space: nowrap;
 
-    .btn {
-      vertical-align: middle;
+    .config {
+      display: inline-block;
 
-      .clients-groups & {
-
-        &-group-config {
-          .btn {
-            border-radius: @btn-border-radius-small;
-
-            &:last-child {
-              display: none;
-            }
-          }
-
-        }
-
-        &-settings {
+      .btn-group-settings {
+        .clients-main & {
           display: none;
         }
-
       }
+      .btn-settings {
+        .clients-groups & {
+          display: none;
+        }
+      }
+    }
+
+    .btn {
+      vertical-align: middle;
 
       &.panic-state {
         &[data-type="on"] {
@@ -178,17 +174,34 @@ input.has-changed {
     }
   }
 
-  &-heading-url {
+  &-settings {
     .well;
+    .clearfix;
     margin-bottom: 0;
     margin-top: 10px;
-    padding: 5px;
+    padding: 10px;
     &-wrapper {
       clear: both;
     }
 
     input {
       background: #FFF;
+    }
+
+    .input-group + .input-group {
+      margin-top: 5px;
+    }
+
+    .js-remove-schedule,
+    .js-add-schedule {
+      cursor: pointer;
+    }
+  }
+
+  #group-undefined& {
+    .config,
+    .clients-settings {
+      display: none;
     }
   }
 

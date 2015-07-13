@@ -9,5 +9,6 @@ module.exports = {
     CLIENT_CHANGEPANICSTATE: 'client:changepanicstate',
     CLIENT_CHANGETITLE: 'client:changetitle',
     GROUP_CHANGETITLE: 'group:changetitle',
+    GROUP_CHANGESCHEDULES: 'group:changeschedules',
     ERROR: 'error'
 };

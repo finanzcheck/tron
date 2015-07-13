@@ -3,7 +3,7 @@ var $ = jQuery;
 
 require('bootstrap/js/transition');
 require('bootstrap/js/collapse');
-
+var CronJob = require('cron').CronJob;
 
 var full = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
 global.socket = require('socket.io-client')(full);
@@ -55,6 +55,8 @@ function makeHTML(clientPool) {
         isDefault: true
     }, clientPool.clients);
 
+    console.debug(clientPool);
+
     var groups = [defaultGroup].concat(clientPool.groups.map(function (group) {
         return new Group(group, clientPool.clients);
     }));
@@ -93,6 +95,22 @@ function showClients() {
         .toggleClass('visible', show)
         .toggleClass('hidden', !show);
 }
+
+var validate = {
+    url: function (value) {
+        return value.match(/^(ht|f)tps?:\/\/[a-z0-9-\.]+\.[a-z]{2,4}\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/) !== null;
+    },
+    cron: function (value) {
+        try {
+            new CronJob(value, function () {
+            });
+
+            return true;
+        } catch (ex) {
+            return false;
+        }
+    }
+};
 
 
 $(function () {
@@ -133,6 +151,66 @@ $(function () {
             makeHTML(clientPool);
             toggleShowSettings();
             showClients();
+        })
+        .on('click', '.js-group-settings', function (event) {
+            $($(this).data('target')).collapse('toggle');
+            $(this).toggleClass('active');
+        })
+        .on('click', '.js-add-schedule', function (event) {
+            var $inputGroup = $(this).parents('.input-group').first();
+            var $inputGroupClone = $inputGroup.clone(true);
+            $inputGroupClone
+                .find('.js-add-schedule').toggleClass('js-add-schedule js-remove-schedule')
+                .find('i').toggleClass('fa-plus fa-minus');
+            $inputGroup.before($inputGroupClone);
+        })
+        .on('click', '.js-remove-schedule', function (event) {
+            $(this).parents('.input-group').first().remove();
+        })
+        .on('submit', '.js-form-settings', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            var $clients = $(event.target).parents('.clients').first().find('.client');
+            var panicUrl,
+                submitValues = {
+                    id: null,
+                    panicUrl: null,
+                    schedules: {
+                        on: [],
+                        off: []
+                    }
+                };
+
+            $(this).serializeArray().forEach(function (item) {
+                if (item.value.trim().length > 0) {
+
+                    switch (item.name) {
+                        case 'id':
+                            submitValues.id = item.value;
+                            break;
+                        case 'panicUrl':
+                            panicUrl = item.panicUrl;
+                            break;
+                        case 'on':
+                            submitValues.schedules.on.push(item.value);
+                            break;
+                        case 'off':
+                            submitValues.schedules.off.push(item.value);
+                            break;
+                    }
+                }
+            });
+
+            $clients.each(function ($client) {
+                var data = {id: $client.data('id')};
+                data['panicUrl'] = panicUrl;
+                socket.emit(socketEvents.CLIENT_CHANGEPANICURL, data);
+            });
+
+            socket.emit(socketEvents.GROUP_CHANGESCHEDULES, submitValues);
+
+            console.debug(submitValues);
         })
         .on('click', '[data-action]', function (event) {
             event.preventDefault();
@@ -195,10 +273,18 @@ $(function () {
                 }
 
                 if (this.type == 'url') {
-                    var isValideUrl = value.match(/^(ht|f)tps?:\/\/[a-z0-9-\.]+\.[a-z]{2,4}\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/) !== null;
+                    var isValideUrl = validate.url(value);
                     $this.toggleClass('has-error', !isValideUrl);
                     if (!isValideUrl) {
                         alert("Please enter valid URL!");
+                        $this.focus();
+                        return;
+                    }
+                }
+
+                if ($this.attr('type') == 'cron') {
+                    if (!validate.cron(value)) {
+                        alert("Please enter valid Schedule!");
                         $this.focus();
                         return;
                     }
@@ -219,9 +305,7 @@ $(function () {
                     data[this.name] = value;
                     socket.emit($this.data('event'), data);
                 }
-
             }
-
         })
         .on('show.bs.collapse hidden.bs.collapse', function (event) {
             $(event.target).parents('.clients').first().find('.js-button-changeurl-all').filter('[data-target="#' + event.target.id + '"]').toggleClass('active', event.type == 'show');
