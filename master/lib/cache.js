@@ -1,5 +1,6 @@
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
+var os = require('os');
 var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
@@ -62,7 +63,7 @@ Cache.prototype.set = function (cache, key, value, cb) {
     cb = cb || noop;
 
     if (undefined === key) {
-        fs.writeFile(path, JSON.stringify(value, null, 2), cb);
+        fs.writeFile(path, JSON.stringify(value, null, 2) + os.EOL, cb);
     }
     else {
         this.get(cache, function (err, content) {
@@ -73,7 +74,6 @@ Cache.prototype.set = function (cache, key, value, cb) {
         });
     }
 };
-
 
 /**
  * @param {String}   cache
