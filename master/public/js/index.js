@@ -81,6 +81,12 @@ function showClients() {
         .toggleClass('hidden', !show);
 }
 
+function findChilds(selector) {
+}
+
+$.fn.findGroup = function () {
+    return this.parents('.clients').first();
+};
 
 $(function () {
     var $waiting = $('.clients-waiting');
@@ -155,8 +161,15 @@ $(function () {
 
         })
         .on('focus blur keyup', '.form-control', function (event) {
+            var self = this;
             var $this = $(this);
             var value = this.value;
+            var emit = function (eventName, data) {
+                eventName = eventName || $this.data('event');
+                data = (typeof data === 'undefined') ? {} : data;
+                data = $.extend(data, {id: $this.data('id')});
+                data[self.name] = value;
+            };
 
             if (event.type == 'keyup') {
                 if (event.keyCode == 13) {
@@ -191,10 +204,18 @@ $(function () {
 
                     $(event.target).parents('.clients').first().find('.js-button-changeurl-all').trigger('click');
 
+                } else if ($this.data('event') == socketEvents.GROUP_CHANGETITLE) {
+                    if ($this.data('id').indexOf('undefined') > -1) {
+                        var clients = $this.findGroup().find('.client').map(function () {
+                            return $(this).attr('client');
+                        }).toArray();
+                        emit(socketEvents.GROUP_NEW, {clients: clients})
+                    } else {
+                        emit();
+                    }
+
                 } else {
-                    var data = {id: $this.data('id')};
-                    data[this.name] = value;
-                    socket.emit($this.data('event'), data);
+                    emit();
                 }
 
             }

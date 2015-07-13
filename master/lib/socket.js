@@ -81,6 +81,17 @@ function Socket(server) {
             });
         });
 
+        socket.on(socketEvents.GROUP_NEW, function (data) {
+            debug([socketEvents.GROUP_NEW, data]);
+
+            //TODO: create new Group and add given clients to them
+            //serverService.changeGroupTitle(data.title, data.id, function (err) {
+            //    if (err) {
+            //        socketError({id: data.id, message: 'Error on changeTitle!'});
+            //    }
+            //});
+        });
+
         serverService.getClientPool().on('clientsUpdated', function () {
             self.ioServer.emit(socketEvents.CLIENTS_LIST, serverService.getClientPool());
         });
