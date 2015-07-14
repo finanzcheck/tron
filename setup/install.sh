@@ -19,7 +19,7 @@ if [[ "$UNAME_STR" == 'Linux' ]]; then
         sudo -s "cat ${SCRIPT_PWD}/config.txt >> /boot/config.txt"
     fi
 
-    if hash gpio 2>/dev/null; then
+    if ! hash gpio 2>/dev/null; then
         CURRENT_PWD=$(pwd)
 
         cd /tmp
