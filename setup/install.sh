@@ -17,7 +17,7 @@ if [[ "$UNAME_STR" == 'Linux' ]]; then
 
     if ! grep -Fxq "## TRON ##" /boot/config.txt
     then
-        cat ${SCRIPT_PWD}/config.txt >> /boot/config.txt
+        sudo cat ${SCRIPT_PWD}/config.txt >> /boot/config.txt
     fi
 
     if hash node 2>/dev/null; then
