@@ -15,9 +15,19 @@ if [[ "$UNAME_STR" == 'Linux' ]]; then
     sudo cp ${SCRIPT_PWD}/xinitrc /boot/xinitrc
     sudo cp ${SCRIPT_PWD}/rc.local /etc/rc.local
 
-    if ! grep -Fxq "## TRON ##" /boot/config.txt
-    then
+    if ! grep -Fxq "## TRON ##" /boot/config.txt; then
         sudo -s "cat ${SCRIPT_PWD}/config.txt >> /boot/config.txt"
+    fi
+
+    if hash gpio 2>/dev/null; then
+        CURRENT_PWD=$(pwd)
+
+        cd /tmp
+        git clone git://git.drogon.net/wiringPi
+        cd wiringPi
+        ./build
+
+        cd ${CURRENT_PWD}
     fi
 
     if hash node 2>/dev/null; then
