@@ -167,18 +167,18 @@ async.waterfall([
     },
     // fallback to lower privileges
     function (next) {
-        // if started via sudo (necessary on raspi to get access to GPIOs)
-        // we get an environment variable for UID and GID which we can use
-        // to lower our privileges
-        var gid = parseInt(process.env.SUDO_GID);
-        var uid = parseInt(process.env.SUDO_UID);
-
-        if (gid) {
-            process.setgid(gid);
-        }
-        if (uid) {
-            process.setuid(uid);
-        }
+        // // if started via sudo (necessary on raspi to get access to GPIOs)
+        // // we get an environment variable for UID and GID which we can use
+        // // to lower our privileges
+        // var gid = parseInt(process.env.SUDO_GID);
+        // var uid = parseInt(process.env.SUDO_UID);
+        //
+        // if (gid) {
+        //     process.setgid(gid);
+        // }
+        // if (uid) {
+        //     process.setuid(uid);
+        // }
 
         next();
     },
