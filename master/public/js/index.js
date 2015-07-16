@@ -4,7 +4,6 @@ var $ = jQuery;
 require('bootstrap/js/transition');
 require('bootstrap/js/collapse');
 
-
 var CronJob = require('cron').CronJob;
 
 var full = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
@@ -46,7 +45,6 @@ function setState($client, state) {
     }
     return clientTogglePending($client, false).removeClass([clientState.OFF, clientState.ON, clientState.UNDEFINED].join(' ')).addClass(clientState[state.toUpperCase()]);
 }
-
 
 function makeHTML(clientPool) {
     var headline = 'Clients';
@@ -111,7 +109,6 @@ var validate = {
         }
     }
 };
-
 
 $.fn.findGroup = function () {
     return this.parents('.clients').first();
@@ -325,13 +322,11 @@ $(function () {
         });
 
     /* drap and drop */
-
-    var dragDrop = require('./lib/dragdrop');
-    dragDrop.on(dragDrop.CLIENT_MOVED, function (client, group) {
-        socket.emit(socketEvents.CLIENT_MOVED, {
-            id: $(client).attr('client'),
-            group: $(group).attr('group')
-        });
-    })
-
+    //var dragDrop = require('./lib/dragdrop');
+    //dragDrop.on(dragDrop.CLIENT_MOVED, function (client, group) {
+    //    socket.emit(socketEvents.CLIENT_MOVED, {
+    //        id: $(client).attr('client'),
+    //        group: $(group).attr('group')
+    //    });
+    //})
 });
