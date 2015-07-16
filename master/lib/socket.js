@@ -45,9 +45,9 @@ function Socket(server) {
         socket.on(socketEvents.CLIENT_CHANGEPANICURL, function (data) {
             debug([socketEvents.CLIENT_CHANGEPANICURL, data]);
 
-            serverService.changePanicUrl(data.url, data.id, function (err) {
+            serverService.changePanicUrl(data.panicUrl, data.id, function (err) {
                 if (err) {
-                    socketError({id: data.id, message: 'Error on changeUrl!'});
+                    socketError({id: data.id, message: 'Error on changePanicUrl!'});
                 }
             });
         });
