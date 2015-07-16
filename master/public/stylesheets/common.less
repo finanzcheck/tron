@@ -1,0 +1,90 @@
+
+
+html, body {
+}
+
+body {
+  padding: 30px 0;
+}
+
+.container {
+  margin: 0 auto;
+  min-width: 290px;
+  max-width: 560px;
+}
+
+.heading {
+  h1, .h3 {
+    margin: 0;
+  }
+
+  .headline {
+    span {
+      display: none;
+    }
+
+    .clients-main & {
+      span {
+        display: block;
+      }
+      input {
+        display: none;
+      }
+    }
+  }
+
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  .pull-right {
+    align-self: flex-end;
+    white-space: nowrap;
+
+    .config {
+      display: inline-block;
+
+      .btn-group-settings {
+        .clients-main & {
+          display: none;
+        }
+      }
+      .btn-settings, .btn-new-group {
+        .clients-groups & {
+          display: none;
+        }
+      }
+    }
+
+    .btn {
+      vertical-align: middle;
+
+      &.panic-state {
+        &[data-type="on"] {
+          .fa {
+            color: @brand-success;
+          }
+        }
+
+        &[data-type="off"] {
+          .fa {
+            color: @brand-danger;
+          }
+        }
+      }
+
+    }
+  }
+
+}
+
+input.has-error {
+  color: @brand-danger;
+  border-color: @brand-danger;
+}
+
+input.has-changed {
+  color: @brand-info;
+}

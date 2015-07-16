@@ -33,6 +33,9 @@ function Group(group, poolClients) {
         return carry || !!client.up;
     }, false);
 
+    /** @type {Object} */
+    var schedules = group.schedules;
+
     Object.defineProperties(this, {
         id: {
             enumerable: true,
@@ -74,6 +77,24 @@ function Group(group, poolClients) {
             enumerable: true,
             get: function () {
                 return panicState;
+            }
+        },
+        schedules: {
+            enumerable: true,
+            get: function () {
+                return schedules;
+            }
+        },
+        isUndefined: {
+            enumerable: true,
+            get: function(){
+                return this.id == 'undefined';
+            }
+        },
+        isAvailable: {
+            enumerable: true,
+            get: function(){
+                return this.isUndefined || !window.showSettings || clients.length > 0;
             }
         }
     });

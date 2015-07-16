@@ -5,6 +5,8 @@ require('bootstrap/js/transition');
 require('bootstrap/js/collapse');
 
 
+var CronJob = require('cron').CronJob;
+
 var full = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
 global.socket = require('socket.io-client')(full);
 
@@ -13,7 +15,7 @@ var socketEvents = require('../../lib/socketEvents');
 var clientState = require('./lib/clientState');
 var Group = require('./model/group');
 
-var showSettings = true;
+window.showSettings = true;
 var clientPool;
 
 var doc = window.document.documentElement;
@@ -62,8 +64,8 @@ function makeHTML(clientPool) {
     var html = require('./views/main')({
             id: 'all',
             title: headline,
-            settings: showSettings,
-            editable: !showSettings,
+            settings: window.showSettings,
+            editable: !window.showSettings,
             groups: groups,
             up: groups.reduce(function (carry, group) {
                 return carry || !!group.up;
@@ -79,8 +81,8 @@ function makeHTML(clientPool) {
 
 function toggleShowSettings() {
     $(doc)
-        .toggleClass('show-settings', !showSettings)
-        .toggleClass('hidden-settings', showSettings);
+        .toggleClass('show-settings', !window.showSettings)
+        .toggleClass('hidden-settings', window.showSettings);
 }
 
 function showClients() {
@@ -94,6 +96,26 @@ function showClients() {
         .toggleClass('hidden', !show);
 }
 
+var validate = {
+    url: function (value) {
+        return value.match(/^(ht|f)tps?:\/\/[a-z0-9-\.]+\.[a-z]{2,4}\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/) !== null;
+    },
+    cron: function (value) {
+        try {
+            new CronJob(value, function () {
+            });
+
+            return true;
+        } catch (ex) {
+            return false;
+        }
+    }
+};
+
+
+$.fn.findGroup = function () {
+    return this.parents('.clients').first();
+};
 
 $(function () {
     var $waiting = $('.clients-waiting');
@@ -129,10 +151,73 @@ $(function () {
 
     $(document.body)
         .on('click', '.js-settings', function (event) {
-            showSettings = !showSettings;
+            window.showSettings = !window.showSettings;
             makeHTML(clientPool);
             toggleShowSettings();
             showClients();
+        })
+        .on('click', '.js-add-group', function (event) {
+
+            $waiting.toggleClass('active', true);
+            socket.emit(socketEvents.GROUP_ADD);
+        })
+        .on('click', '.js-group-settings', function (event) {
+            $($(this).data('target')).collapse('toggle');
+            $(this).toggleClass('active');
+        })
+        .on('click', '.js-add-schedule', function (event) {
+            var $inputGroup = $(this).parents('.input-group').first();
+            var $inputGroupClone = $inputGroup.clone(true);
+            $inputGroupClone
+                .find('.js-add-schedule').toggleClass('js-add-schedule js-remove-schedule')
+                .find('i').toggleClass('fa-plus fa-minus');
+            $inputGroup.before($inputGroupClone);
+        })
+        .on('click', '.js-remove-schedule', function (event) {
+            $(this).parents('.input-group').first().remove();
+        })
+        .on('submit', '.js-form-settings', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            var $clients = $(event.target).parents('.clients').first().find('.client');
+            var panicUrl,
+                submitValues = {
+                    id: null,
+                    panicUrl: null,
+                    schedules: {
+                        on: [],
+                        off: []
+                    }
+                };
+
+            $(this).serializeArray().forEach(function (item) {
+                if (item.value.trim().length > 0) {
+
+                    switch (item.name) {
+                        case 'id':
+                            submitValues.id = item.value;
+                            break;
+                        case 'panicUrl':
+                            panicUrl = item.panicUrl;
+                            break;
+                        case 'on':
+                            submitValues.schedules.on.push(item.value);
+                            break;
+                        case 'off':
+                            submitValues.schedules.off.push(item.value);
+                            break;
+                    }
+                }
+            });
+
+            $clients.each(function ($client) {
+                var data = {id: $client.data('id')};
+                data['panicUrl'] = panicUrl;
+                socket.emit(socketEvents.CLIENT_CHANGEPANICURL, data);
+            });
+
+            socket.emit(socketEvents.GROUP_CHANGESCHEDULES, submitValues);
         })
         .on('click', '[data-action]', function (event) {
             event.preventDefault();
@@ -154,7 +239,7 @@ $(function () {
                     });
                     break;
                 case 'switch-all':
-                    $(event.target).parents('.clients').first().find('.client').not('[disabled]').each(function (client) {
+                    $(event.target).findGroup().find('.client').not('[disabled]').each(function (client) {
                         var id = $(this).attr('client');
                         socket.emit(socketEvents.CLIENT_SWITCH, {
                             id: id,
@@ -178,8 +263,15 @@ $(function () {
 
         })
         .on('focus blur keyup', '.form-control', function (event) {
+            var self = this;
             var $this = $(this);
             var value = this.value;
+            var emit = function (eventName, data) {
+                eventName = eventName || $this.data('event');
+                data = (typeof data === 'undefined') ? {} : data;
+                data = $.extend(data, {id: $this.data('id')});
+                data[self.name] = value;
+            };
 
             if (event.type == 'keyup') {
                 if (event.keyCode == 13) {
@@ -195,7 +287,7 @@ $(function () {
                 }
 
                 if (this.type == 'url') {
-                    var isValideUrl = value.match(/^(ht|f)tps?:\/\/[a-z0-9-\.]+\.[a-z]{2,4}\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/) !== null;
+                    var isValideUrl = validate.url(value);
                     $this.toggleClass('has-error', !isValideUrl);
                     if (!isValideUrl) {
                         alert("Please enter valid URL!");
@@ -204,26 +296,41 @@ $(function () {
                     }
                 }
 
+                if ($this.attr('type') == 'cron') {
+                    if (!validate.cron(value)) {
+                        alert("Please enter valid Schedule!");
+                        $this.focus();
+                        return;
+                    }
+                }
+
                 $this.addClass('has-changed');
 
                 if ($this.data('event') == 'client:changeurl-all') {
-                    $(event.target).parents('.clients').first().find('input[data-event="' + socketEvents.CLIENT_CHANGEURL + '"]').each(function () {
+                    $(event.target).findGroup().find('input[data-event="' + socketEvents.CLIENT_CHANGEURL + '"]').each(function () {
                         this.value = value;
                         $(this).trigger('blur');
                     });
 
-                    $(event.target).parents('.clients').first().find('.js-button-changeurl-all').trigger('click');
+                    $(event.target).findGroup().find('.js-button-changeurl-all').trigger('click');
 
                 } else {
-                    var data = {id: $this.data('id')};
-                    data[this.name] = value;
-                    socket.emit($this.data('event'), data);
+                    emit();
                 }
-
             }
-
         })
         .on('show.bs.collapse hidden.bs.collapse', function (event) {
             $(event.target).parents('.clients').first().find('.js-button-changeurl-all').filter('[data-target="#' + event.target.id + '"]').toggleClass('active', event.type == 'show');
         });
+
+    /* drap and drop */
+
+    var dragDrop = require('./lib/dragdrop');
+    dragDrop.on(dragDrop.CLIENT_MOVED, function (client, group) {
+        socket.emit(socketEvents.CLIENT_MOVED, {
+            id: $(client).attr('client'),
+            group: $(group).attr('group')
+        });
+    })
+
 });

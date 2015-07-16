@@ -2,6 +2,7 @@ var serverService = require('./server');
 var socketEvents = require('./socketEvents');
 var debug = require('debug')('master:socket');
 var SocketIO = require('socket.io');
+var Group = require('../../lib/group');
 
 function Socket(server) {
     var self = this;
@@ -71,6 +72,16 @@ function Socket(server) {
             });
         });
 
+        socket.on(socketEvents.CLIENT_MOVED, function (data) {
+            debug([socketEvents.CLIENT_MOVED, data]);
+
+            serverService.changeGroup(data.group, data.id, function (err) {
+                if (err) {
+                    socketError({id: data.id, message: 'Error on changeGroup!'});
+                }
+            });
+        });
+
         socket.on(socketEvents.GROUP_CHANGETITLE, function (data) {
             debug([socketEvents.GROUP_CHANGETITLE, data]);
 
@@ -79,6 +90,24 @@ function Socket(server) {
                     socketError({id: data.id, message: 'Error on changeTitle!'});
                 }
             });
+        });
+
+        socket.on(socketEvents.GROUP_CHANGESETTINGS, function (data) {
+            debug([socketEvents.GROUP_CHANGESETTINGS, data]);
+
+            //TODO save schedules in ClientPool
+            //serverService.changeGroupTitle(data.title, data.id, function (err) {
+            //    if (err) {
+            //        socketError({id: data.id, message: 'Error on changeTitle!'});
+            //    }
+            //});
+        });
+
+        socket.on(socketEvents.GROUP_ADD, function (data) {
+            debug([socketEvents.GROUP_ADD, data]);
+
+            var clientPool = serverService.getClientPool();
+            clientPool.addGroup(new Group());
         });
 
         serverService.getClientPool().on('clientsUpdated', function () {

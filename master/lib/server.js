@@ -179,6 +179,22 @@ module.exports = {
         }
     },
     /**
+     * @param {String}   group
+     * @param {String}   which
+     * @param {Function} cb
+     */
+    changeGroup: function (group, which, cb) {
+        try {
+            var client = this.getClient(which, true);
+            client.group = group;
+
+            cb(null, client);
+        }
+        catch (e) {
+            cb(e);
+        }
+    },
+    /**
      * @param {String}   title
      * @param {String}   which
      * @param {Function} cb
@@ -232,7 +248,7 @@ module.exports = {
     /**
      * @param  {String}  id
      *
-     * @return {Client}
+     * @return {Group}
      */
     getGroup: function (id) {
         var group = clientPool.getGroupById(id);
