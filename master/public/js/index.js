@@ -196,7 +196,7 @@ $(function () {
                             submitValues.id = item.value;
                             break;
                         case 'panicUrl':
-                            panicUrl = item.panicUrl;
+                            panicUrl = item.value;
                             break;
                         case 'on':
                             submitValues.schedules.on.push(item.value);
@@ -210,7 +210,7 @@ $(function () {
 
             $clients.each(function () {
                 var $client = $(this);
-                var data = {id: $client.data('id')};
+                var data = {id: $client.attr('client')};
                 data['panicUrl'] = panicUrl;
                 socket.emit(socketEvents.CLIENT_CHANGEPANICURL, data);
             });
