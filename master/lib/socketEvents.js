@@ -10,5 +10,6 @@ module.exports = {
     CLIENT_CHANGETITLE: 'client:changetitle',
     GROUP_CHANGETITLE: 'group:changetitle',
     GROUP_CHANGESCHEDULES: 'group:changeschedules',
+    GROUP_NEW: 'group:new',
     ERROR: 'error'
 };
