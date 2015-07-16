@@ -87,14 +87,14 @@ function Group(group, poolClients) {
         },
         isUndefined: {
             enumerable: true,
-            get: function(){
+            get: function () {
                 return this.id == 'undefined';
             }
         },
         isAvailable: {
             enumerable: true,
-            get: function(){
-                return this.isUndefined || !window.showSettings || clients.length > 0;
+            get: function () {
+                return (this.isUndefined && clients.length > 0) || !window.showSettings || clients.length > 0;
             }
         }
     });
