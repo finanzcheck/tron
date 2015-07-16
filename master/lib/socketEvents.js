@@ -8,8 +8,9 @@ module.exports = {
     CLIENT_CHANGEPANICURL: 'client:changepanicurl',
     CLIENT_CHANGEPANICSTATE: 'client:changepanicstate',
     CLIENT_CHANGETITLE: 'client:changetitle',
+    CLIENT_MOVED: 'client:moved',
     GROUP_CHANGETITLE: 'group:changetitle',
     GROUP_CHANGESCHEDULES: 'group:changeschedules',
-    GROUP_NEW: 'group:new',
+    GROUP_ADD: 'group:new',
     ERROR: 'error'
 };

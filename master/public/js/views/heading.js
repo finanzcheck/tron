@@ -2,9 +2,10 @@ var hogan = require("hogan");
 
 var str =
     '<div class="heading"> \
-         <h1 class="pull-left headline"><span>{{title}}</span><input class="form-control client-title" {{#settings}}disabled{{/settings}} name="title" data-event="group:changetitle" data-id="{{id}}" value="{{title}}" type="text"></h1> \
+         <h1 class="pull-left headline"><span>{{title}}</span><input class="form-control client-title" {{#settings}}disabled{{/settings}} {{#isUndefined}}disabled{{/isUndefined}} name="title" data-event="group:changetitle" data-id="{{id}}" value="{{title}}" type="text"></h1> \
          <div class="pull-right">\
              <div class="config">\
+                 {{#editable}}<button type="button" class="btn btn-sm btn-default btn-new-group js-add-group" data-target="#collapse-{{id}}" aria-expanded="false" aria-controls="collapse-{{id}}"><i class="fa fa-fw fa-lg fa-plus"></i></button>{{/editable}}\
                  {{#editable}}<button type="button" class="btn btn-sm btn-default btn-group-settings js-group-settings" data-target="#collapse-{{id}}" aria-expanded="false" aria-controls="collapse-{{id}}"><i class="fa fa-fw fa-lg fa-cog"></i></button>{{/editable}}\
                  <button type="button" class="btn btn-sm btn-default {{^settings}}active{{/settings}} btn-settings js-settings"><i class="fa fa-fw fa-lg fa-cogs"></i></button>\
              </div>\
@@ -15,8 +16,8 @@ var str =
              <button type="button" data-action="switch-panic" data-type="{{#panicState}}on{{/panicState}}{{^panicState}}off{{/panicState}}" class="btn btn-lg btn-default btn-size panic-state {{#panicState}}active{{/panicState}}"><i class="fa fa-lg fa-fw fa-exclamation-triangle"></i></button>\
          </div>\
     </div>\
-    <div class="clients-settings-wrapper collapse" id="collapse-{{id}}">\
-        {{^noSettings}}<div class="clients-settings">\
+   {{^noSettings}}<div class="clients-settings-wrapper collapse" id="collapse-{{id}}">\
+        <div class="clients-settings">\
         <form class="js-form-settings">\
           <div class="form-group">\
             <label for="inputEmail3" class="control-label">Panic-Url</label>\
@@ -54,8 +55,8 @@ var str =
           </div>\
           <input type="hidden" name="id" value="{{id}}">\
         </form>\
-         </div>{{/noSettings}}\
-     </div>';
+         </div>\
+     </div>{{/noSettings}}';
 
 var template = hogan.compile(str);
 

@@ -3,6 +3,8 @@ var $ = jQuery;
 
 require('bootstrap/js/transition');
 require('bootstrap/js/collapse');
+
+
 var CronJob = require('cron').CronJob;
 
 var full = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
@@ -13,7 +15,7 @@ var socketEvents = require('../../lib/socketEvents');
 var clientState = require('./lib/clientState');
 var Group = require('./model/group');
 
-var showSettings = true;
+window.showSettings = true;
 var clientPool;
 
 var doc = window.document.documentElement;
@@ -55,8 +57,6 @@ function makeHTML(clientPool) {
         isDefault: true
     }, clientPool.clients);
 
-    console.debug(clientPool);
-
     var groups = [defaultGroup].concat(clientPool.groups.map(function (group) {
         return new Group(group, clientPool.clients);
     }));
@@ -64,8 +64,8 @@ function makeHTML(clientPool) {
     var html = require('./views/main')({
             id: 'all',
             title: headline,
-            settings: showSettings,
-            editable: !showSettings,
+            settings: window.showSettings,
+            editable: !window.showSettings,
             groups: groups,
             up: groups.reduce(function (carry, group) {
                 return carry || !!group.up;
@@ -81,8 +81,8 @@ function makeHTML(clientPool) {
 
 function toggleShowSettings() {
     $(doc)
-        .toggleClass('show-settings', !showSettings)
-        .toggleClass('hidden-settings', showSettings);
+        .toggleClass('show-settings', !window.showSettings)
+        .toggleClass('hidden-settings', window.showSettings);
 }
 
 function showClients() {
@@ -151,10 +151,15 @@ $(function () {
 
     $(document.body)
         .on('click', '.js-settings', function (event) {
-            showSettings = !showSettings;
+            window.showSettings = !window.showSettings;
             makeHTML(clientPool);
             toggleShowSettings();
             showClients();
+        })
+        .on('click', '.js-add-group', function (event) {
+
+            $waiting.toggleClass('active', true);
+            socket.emit(socketEvents.GROUP_ADD);
         })
         .on('click', '.js-group-settings', function (event) {
             $($(this).data('target')).collapse('toggle');
@@ -213,8 +218,6 @@ $(function () {
             });
 
             socket.emit(socketEvents.GROUP_CHANGESCHEDULES, submitValues);
-
-            console.debug(submitValues);
         })
         .on('click', '[data-action]', function (event) {
             event.preventDefault();
@@ -311,16 +314,6 @@ $(function () {
 
                     $(event.target).findGroup().find('.js-button-changeurl-all').trigger('click');
 
-                } else if ($this.data('event') == socketEvents.GROUP_CHANGETITLE) {
-                    if ($this.data('id').indexOf('undefined') > -1) {
-                        var clients = $this.findGroup().find('.client').map(function () {
-                            return $(this).attr('client');
-                        }).toArray();
-                        emit(socketEvents.GROUP_NEW, {clients: clients})
-                    } else {
-                        emit();
-                    }
-
                 } else {
                     emit();
                 }
@@ -329,4 +322,15 @@ $(function () {
         .on('show.bs.collapse hidden.bs.collapse', function (event) {
             $(event.target).parents('.clients').first().find('.js-button-changeurl-all').filter('[data-target="#' + event.target.id + '"]').toggleClass('active', event.type == 'show');
         });
+
+    /* drap and drop */
+
+    var dragDrop = require('./lib/dragdrop');
+    dragDrop.on(dragDrop.CLIENT_MOVED, function (client, group) {
+        socket.emit(socketEvents.CLIENT_MOVED, {
+            id: $(client).attr('client'),
+            group: $(group).attr('group')
+        });
+    })
+
 });

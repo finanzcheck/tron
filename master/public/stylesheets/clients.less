@@ -1,82 +1,9 @@
-.heading {
-  h1, .h3 {
-    margin: 0;
-  }
-
-  .headline {
-    span {
-      display: none;
-    }
-
-    .clients-main & {
-      span {
-        display: block;
-      }
-      input {
-        display: none;
-      }
-    }
-  }
-
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-
-  .pull-right {
-    align-self: flex-end;
-    white-space: nowrap;
-
-    .config {
-      display: inline-block;
-
-      .btn-group-settings {
-        .clients-main & {
-          display: none;
-        }
-      }
-      .btn-settings {
-        .clients-groups & {
-          display: none;
-        }
-      }
-    }
-
-    .btn {
-      vertical-align: middle;
-
-      &.panic-state {
-        &[data-type="on"] {
-          .fa {
-            color: @brand-success;
-          }
-        }
-
-        &[data-type="off"] {
-          .fa {
-            color: @brand-danger;
-          }
-        }
-      }
-
-    }
-  }
-
-}
-
-input.has-error {
-  color: @brand-danger;
-  border-color: @brand-danger;
-}
-
-input.has-changed {
-  color: @brand-info;
-}
 
 .clients {
   display: flex;
   flex-direction: column;
+
+  @import "clients/group";
 
   input {
     background: transparent;
@@ -115,7 +42,6 @@ input.has-changed {
   }
 
   .panel-body {
-    overflow: auto;
     flex-grow: 1;
     flex-shrink: 1;
   }
@@ -230,67 +156,4 @@ input.has-changed {
     }
   }
 
-}
-
-.client {
-  display: flex;
-  flex-direction: row;
-  position: relative;
-
-  > span {
-    flex: 1 1 auto;
-
-  }
-
-  &-title {
-    font-weight: bold;
-  }
-
-  &-url {
-    font-size: .7em;
-  }
-
-  &-id {
-    text-transform: uppercase;
-    text-shadow: 0 -1px 1px #666666, 0 1px 1px #FFFFFF;
-    color: #CCCCCC;
-    position: absolute;
-    top: 2px;
-    right: 4px;
-    font-size: 0.5em;
-    opacity: 0.75;
-  }
-
-  &-state {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    margin-right: 15px;
-    color: grey;
-    border-radius: 15px;
-    .btn-default;
-
-    &-pending {
-    }
-
-    &-on {
-      .btn-success;
-    }
-
-    &-off {
-      .btn-danger;
-    }
-
-    &-error {
-      .btn-warning;
-
-      i {
-        &:before {
-          content: @fa-var-exclamation;
-        }
-      }
-    }
-  }
 }

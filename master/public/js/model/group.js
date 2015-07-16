@@ -84,6 +84,18 @@ function Group(group, poolClients) {
             get: function () {
                 return schedules;
             }
+        },
+        isUndefined: {
+            enumerable: true,
+            get: function(){
+                return this.id == 'undefined';
+            }
+        },
+        isAvailable: {
+            enumerable: true,
+            get: function(){
+                return this.isUndefined || !window.showSettings || clients.length > 0;
+            }
         }
     });
 }
