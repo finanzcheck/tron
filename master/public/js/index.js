@@ -211,7 +211,8 @@ $(function () {
                 }
             });
 
-            $clients.each(function ($client) {
+            $clients.each(function () {
+                var $client = $(this);
                 var data = {id: $client.data('id')};
                 data['panicUrl'] = panicUrl;
                 socket.emit(socketEvents.CLIENT_CHANGEPANICURL, data);
