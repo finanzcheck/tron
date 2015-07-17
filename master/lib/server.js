@@ -130,14 +130,9 @@ module.exports = {
     changePanicUrl: function (url, which, cb) {
         try {
             var client = this.getClient(which, true);
-            client.url = url;
+            client.panicUrl = url;
+            cb(null, client);
 
-            if (client.up) {
-                protocol.requestSetPanicUrl(url, client.socket, cb);
-            }
-            else {
-                cb(null, client);
-            }
         } catch (e) {
             cb(e);
         }
