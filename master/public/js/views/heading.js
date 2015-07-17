@@ -21,7 +21,7 @@ var str =
         <form class="js-form-settings">\
           <div class="form-group">\
             <label for="inputEmail3" class="control-label">Panic-Url</label>\
-              <input type="url" class="form-control" name="panicUrl" placeholder="Panic-Url">\
+              <input type="url" class="form-control" name="panicUrl" value="{{panicUrl}}" placeholder="Panic-Url">\
           </div>\
           <fieldset>\
           <legend>Scheduler</legend>\
