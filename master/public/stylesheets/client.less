@@ -8,6 +8,10 @@
 
   }
 
+  .arrange-clients & * {
+    cursor: move;
+  }
+
   &.drag-move {
     box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.15);
 
@@ -61,6 +65,15 @@
       i {
         &:before {
           content: @fa-var-exclamation;
+        }
+      }
+    }
+
+    .arrange-clients & {
+      .btn-info;
+      i {
+        &:before {
+          content: @fa-var-arrows;
         }
       }
     }

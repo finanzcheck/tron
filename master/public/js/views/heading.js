@@ -4,11 +4,14 @@ var str =
     '<div class="heading"> \
          <h1 class="pull-left headline"><span>{{title}}</span><input class="form-control client-title" {{#settings}}disabled{{/settings}} {{#isUndefined}}disabled{{/isUndefined}} name="title" data-event="group:changetitle" data-id="{{id}}" value="{{title}}" type="text"></h1> \
          <div class="pull-right">\
-             <div class="config">\
-                 {{#editable}}<button type="button" class="btn btn-sm btn-default btn-new-group js-add-group" data-target="#collapse-{{id}}" aria-expanded="false" aria-controls="collapse-{{id}}"><i class="fa fa-fw fa-lg fa-plus"></i></button>{{/editable}}\
-                 {{#editable}}<button type="button" class="btn btn-sm btn-default btn-group-settings js-group-settings" data-target="#collapse-{{id}}" aria-expanded="false" aria-controls="collapse-{{id}}"><i class="fa fa-fw fa-lg fa-cog"></i></button>{{/editable}}\
-                 <button type="button" class="btn btn-sm btn-default {{^settings}}active{{/settings}} btn-settings js-settings"><i class="fa fa-fw fa-lg fa-cogs"></i></button>\
-             </div>\
+                 <div class="config config-main">\
+                     {{#editable}}<button type="button" class="btn btn-sm btn-default btn-new-group js-add-group" data-target="#collapse-{{id}}" aria-expanded="false" aria-controls="collapse-{{id}}"><i class="fa fa-fw fa-lg fa-plus"></i></button>{{/editable}}\
+                     {{#editable}}<button type="button" class="btn btn-sm btn-default btn-clients-arrange js-clients-arrange" data-target="#collapse-{{id}}" aria-expanded="false" aria-controls="collapse-{{id}}"><i class="fa fa-fw fa-lg fa-arrows"></i></button>{{/editable}}\
+                     <button type="button" class="btn btn-sm btn-default {{^settings}}active{{/settings}} btn-settings js-settings"><i class="fa fa-fw fa-lg fa-cogs"></i></button>\
+                 </div>\
+                 <div class="config config-group">\
+                     {{#editable}}<button type="button" class="btn btn-sm btn-default {{#arrangeClients}}active{{/arrangeClients}} btn-group-settings js-group-settings" data-target="#collapse-{{id}}" aria-expanded="false" aria-controls="collapse-{{id}}"><i class="fa fa-fw fa-lg fa-cog"></i></button>{{/editable}}\
+                 </div>\
              <div class="btn-group">\
                  <button type="button" {{^up}}disabled{{/up}} data-action="switch-all" data-type="off" class="btn btn-lg btn-size client-state-off"><i class="fa fa-lg fa-fw fa-power-off"></i></button>\
                  <button type="button" {{^up}}disabled{{/up}} data-action="switch-all" data-type="on" class="btn btn-lg btn-size client-state-on"><i class="fa fa-lg fa-fw fa-power-off"></i></button>\

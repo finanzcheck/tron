@@ -46,7 +46,7 @@ var dragDrop = new DragDrop();
 module.exports = dragDrop;
 
 // target elements with the "draggable" class
-interact('.show-settings .client')
+interact('.arrange-clients .client')
     .draggable({
         // enable inertial throwing
         inertia: {
@@ -91,7 +91,7 @@ function dragMoveListener(event) {
  * applies to this demo as well so it doesn't have to be repeated. */
 
 // enable draggables to be dropped into this
-interact('.show-settings .clients-group')
+interact('.arrange-clients .clients-group')
     .dropzone({
         // only accept elements matching this CSS selector
         accept: '.client',

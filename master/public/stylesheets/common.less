@@ -44,16 +44,16 @@ body {
     white-space: nowrap;
 
     .config {
-      display: inline-block;
+      display: none;
 
-      .btn-group-settings {
+      &-main {
         .clients-main & {
-          display: none;
+          display: inline-block;
         }
       }
-      .btn-settings, .btn-new-group {
+      &-group {
         .clients-groups & {
-          display: none;
+          display: inline-block;
         }
       }
     }

@@ -15,6 +15,7 @@ var clientState = require('./lib/clientState');
 var Group = require('./model/group');
 
 window.showSettings = true;
+window.arrangeClients = false;
 var clientPool;
 
 var doc = window.document.documentElement;
@@ -64,6 +65,7 @@ function makeHTML(clientPool) {
             title: headline,
             settings: window.showSettings,
             editable: !window.showSettings,
+            arrangeClients: window.arrangeClients,
             groups: groups,
             up: groups.reduce(function (carry, group) {
                 return carry || !!group.up;
@@ -154,13 +156,17 @@ $(function () {
             showClients();
         })
         .on('click', '.js-add-group', function (event) {
-
             $waiting.toggleClass('active', true);
             socket.emit(socketEvents.GROUP_ADD);
         })
         .on('click', '.js-group-settings', function (event) {
             $($(this).data('target')).collapse('toggle');
             $(this).toggleClass('active');
+        })
+        .on('click', '.js-clients-arrange', function (event) {
+            window.arrangeClients = !window.arrangeClients;
+            $(doc).toggleClass('arrange-clients', window.arrangeClients);
+            $(this).toggleClass('active', window.arrangeClients);
         })
         .on('click', '.js-add-schedule', function (event) {
             var $inputGroup = $(this).parents('.input-group').first();
@@ -322,11 +328,11 @@ $(function () {
         });
 
     /* drap and drop */
-    //var dragDrop = require('./lib/dragdrop');
-    //dragDrop.on(dragDrop.CLIENT_MOVED, function (client, group) {
-    //    socket.emit(socketEvents.CLIENT_MOVED, {
-    //        id: $(client).attr('client'),
-    //        group: $(group).attr('group')
-    //    });
-    //})
+    var dragDrop = require('./lib/dragdrop');
+    dragDrop.on(dragDrop.CLIENT_MOVED, function (client, group) {
+        socket.emit(socketEvents.CLIENT_MOVED, {
+            id: $(client).attr('client'),
+            group: $(group).attr('group')
+        });
+    })
 });
