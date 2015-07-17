@@ -275,6 +275,8 @@ $(function () {
                 data = (typeof data === 'undefined') ? {} : data;
                 data = $.extend(data, {id: $this.data('id')});
                 data[self.name] = value;
+
+                socket.emit(eventName, data);
             };
 
             if (event.type == 'keyup') {
