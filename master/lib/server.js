@@ -104,12 +104,12 @@ module.exports = {
     },
     /**
      * @param {String}   url
-     * @param {String}   which
+     * @param {String}   clientId
      * @param {Function} cb
      */
-    changeUrl: function (url, which, cb) {
+    changeUrl: function (url, clientId, cb) {
         try {
-            var client = this.getClient(which, true);
+            var client = this.getClient(clientId, true);
             client.url = url;
 
             if (client.up) {
@@ -124,12 +124,12 @@ module.exports = {
     },
     /**
      * @param {String}   url
-     * @param {String}   which
+     * @param {String}   clientId
      * @param {Function} cb
      */
-    changePanicUrl: function (url, which, cb) {
+    changePanicUrl: function (url, clientId, cb) {
         try {
-            var client = this.getClient(which, true);
+            var client = this.getClient(clientId, true);
             client.panicUrl = url;
             cb(null, client);
 
@@ -139,12 +139,12 @@ module.exports = {
     },
     /**
      * @param {String}   state
-     * @param {String}   which
+     * @param {String}   clientId
      * @param {Function} cb
      */
-    setPanicState: function (state, which, cb) {
+    setPanicState: function (state, clientId, cb) {
         try {
-            var client = this.getClient(which, true);
+            var client = this.getClient(clientId, true);
             client.panicState = state;
 
             if (client.up) {
@@ -159,12 +159,12 @@ module.exports = {
     },
     /**
      * @param {String}   title
-     * @param {String}   which
+     * @param {String}   clientId
      * @param {Function} cb
      */
-    changeTitle: function (title, which, cb) {
+    changeTitle: function (title, clientId, cb) {
         try {
-            var client = this.getClient(which, true);
+            var client = this.getClient(clientId, true);
             client.title = title;
 
             cb(null, client);
@@ -174,14 +174,18 @@ module.exports = {
         }
     },
     /**
-     * @param {String}   group
-     * @param {String}   which
+     * @param {String}   groupId
+     * @param {String}   clientId
      * @param {Function} cb
      */
-    changeGroup: function (group, which, cb) {
+    changeGroup: function (groupId, clientId, cb) {
         try {
-            var client = this.getClient(which, true);
-            client.group = group;
+            var client = this.getClient(clientId, true);
+            var group = this.getGroup(groupId);
+
+            client.group = groupId;
+            client.panicUrl = group.panicUrl;
+            client.panicState = group.panicState;
 
             cb(null, client);
         }
@@ -191,12 +195,12 @@ module.exports = {
     },
     /**
      * @param {String}   title
-     * @param {String}   which
+     * @param {String}   groupId
      * @param {Function} cb
      */
-    changeGroupTitle: function (title, which, cb) {
+    changeGroupTitle: function (title, groupId, cb) {
         try {
-            var group = this.getGroup(which);
+            var group = this.getGroup(groupId);
             group.title = title;
 
             cb(null, group);
@@ -207,12 +211,12 @@ module.exports = {
     },
     /**
      * @param {Boolean|Number} state
-     * @param {String}         which
+     * @param {String}         clientId
      * @param {Function}       cb
      */
-    switchTV: function (state, which, cb) {
+    switchTV: function (state, clientId, cb) {
         try {
-            var client = this.getClient(which);
+            var client = this.getClient(clientId);
             protocol.requestSwitchTV(state, client.socket, cb);
         }
         catch (e) {
