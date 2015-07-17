@@ -2,20 +2,20 @@ var browserify = require('browserify');
 var debug = require('debug')('master:staticr:browserify');
 var debugEnabled = process.env.NODE_ENV !== 'production';
 var routes = {
-    '/dist/js/index.js': function factory() {
+    '/dist/js/index.js': function factory(cb) {
         debug('run on /dist/js/index.js');
-        var bundler = browserify({
+        var bundle = browserify({
             entries: './master/public/js/index.js',
-            debug: debugEnabled
+            debug: true
         });
 
+        bundle.plugin('envify');
+
         if (!debugEnabled) {
-            bundler.transform({
-                global: true
-            }, 'uglifyify');
+            bundle.plugin('minifyify', {map: 'bundle.map.json'});
         }
 
-        return bundler.bundle()
+        return bundle.bundle(cb);
 
     }
 };
