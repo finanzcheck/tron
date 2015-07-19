@@ -13,11 +13,8 @@ function StateStorage() {
             },
             set: function (val) {
                 showSettings = val;
-
-                if (showSettings == false) {
+                if (showSettings == true) {
                     this.arrangeClients = false;
-                } else {
-                    this.emit('change');
                 }
 
                 this.emit('show', showSettings);
