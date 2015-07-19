@@ -2,7 +2,7 @@ var hogan = require("hogan");
 
 var str =
     '<header class="clients-main">\
-        <a href="#" class="btn btn-link btn-sm"><i class="fa fa-fw fa-arrow-left"></i></a> \
+        <a href="#" class="btn btn-link btn-sm btn-back-main"><i class="fa fa-fw fa-arrow-left"></i></a> \
         {{> heading}}\
     </header>\
     <div class="clients-groups js-groups">\
@@ -10,7 +10,7 @@ var str =
             {{> group}}\
         {{/groups}}\
     </div>\
-    <div class="clients-groups-toggle"><a class="btn btn-default" href="#clients"><i class="fa fa-cog"></i> Details</a></div>';
+    <div class="clients-groups-toggle"><a class="btn btn-sm btn-link" href="#clients">Details<i class="fa fa-fw fa-arrow-right"></i></a></div>';
 
 var template = hogan.compile(str);
 var partial = {

@@ -3,6 +3,10 @@
   display: flex;
   flex-direction: column;
 
+  .hidden-clients & {
+    height: 100vh;
+  }
+
   @import "clients/group";
 
   input {
@@ -55,15 +59,66 @@
   &-main {
     margin-bottom: 15px;
     order: 1;
+
+    .hidden-clients & {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .headline, .config {
+        display: none !important;
+      }
+
+      .pull-right {
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: center;
+      }
+
+      .btn-group {
+        top: 15vmin;
+        .btn-size {
+          .btn-sm;
+        }
+      }
+
+      .panic-state {
+        width: 50vmin;
+        height: 50vmin;
+        border-radius: 100%;
+        i {
+          font-size: 20vmin;
+        }
+      }
+
+    }
+
+    .btn-back-main {
+      .hidden-clients & {
+        display: none;
+      }
+    }
   }
 
   &-waiting {
     display: none;
     align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: @zindex-modal;
+
+    width: 100vw;
+    height: 100vh;
+    background: @body-bg;
 
     span {
       font-size: 22px;
       margin-left: .7em;
+    }
+
+    i {
+      text-shadow: none;
     }
 
     &.active {
