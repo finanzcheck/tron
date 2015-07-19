@@ -11,11 +11,12 @@ global.socket = require('socket.io-client')(full);
 
 var socketEvents = require('../../lib/socketEvents');
 
+var stateStorage = require('./lib/stateStorage');
 var clientState = require('./lib/clientState');
 var Group = require('./model/group');
 
-window.showSettings = true;
 window.arrangeClients = false;
+
 var clientPool;
 
 var doc = window.document.documentElement;
@@ -63,9 +64,9 @@ function makeHTML(clientPool) {
     var html = require('./views/main')({
             id: 'all',
             title: headline,
-            settings: window.showSettings,
-            editable: !window.showSettings,
-            arrangeClients: window.arrangeClients,
+            settings: stateStorage.show,
+            editable: stateStorage.editable,
+            arrangeClients: stateStorage.arrangeClients,
             groups: groups,
             up: groups.reduce(function (carry, group) {
                 return carry || !!group.up;
@@ -79,11 +80,18 @@ function makeHTML(clientPool) {
     $('.js-clients').empty().append(html);
 }
 
-function toggleShowSettings() {
+stateStorage.on('show', function (state) {
     $(doc)
-        .toggleClass('show-settings', !window.showSettings)
-        .toggleClass('hidden-settings', window.showSettings);
-}
+        .toggleClass('show-settings', state)
+        .toggleClass('hidden-settings', state);
+    makeHTML(clientPool);
+    showClients();
+});
+
+stateStorage.on('arrangeClients', function (state) {
+    $(doc).toggleClass('arrange-clients', state);
+    $('.js-clients-arrange').toggleClass('active', state);
+});
 
 function showClients() {
     var show = location.hash.indexOf('clients') > -1;
@@ -134,8 +142,6 @@ $(function () {
         $waiting.toggleClass('active', clientPool.groups.length <= 0 && clientPool.clients.length <= 0);
 
         makeHTML(clientPool);
-        toggleShowSettings();
-
         showClients();
     });
 
@@ -150,10 +156,7 @@ $(function () {
 
     $(document.body)
         .on('click', '.js-settings', function (event) {
-            window.showSettings = !window.showSettings;
-            makeHTML(clientPool);
-            toggleShowSettings();
-            showClients();
+            stateStorage.show = !stateStorage.show;
         })
         .on('click', '.js-add-group', function (event) {
             $waiting.toggleClass('active', true);
@@ -164,9 +167,7 @@ $(function () {
             $(this).toggleClass('active');
         })
         .on('click', '.js-clients-arrange', function (event) {
-            window.arrangeClients = !window.arrangeClients;
-            $(doc).toggleClass('arrange-clients', window.arrangeClients);
-            $(this).toggleClass('active', window.arrangeClients);
+            stateStorage.arrangeClients = !stateStorage.arrangeClients;
         })
         .on('click', '.js-add-schedule', function (event) {
             var $inputGroup = $(this).parents('.input-group').first();
@@ -254,7 +255,6 @@ $(function () {
                 case 'switch-panic':
                     $(event.target).parents('.clients').first().find('.client').each(function (client) {
                         var id = $(this).attr('client');
-                        console.debug($this, this);
                         socket.emit(socketEvents.CLIENT_CHANGEPANICSTATE, {
                             id: id,
                             panicState: $this.data('type') == 'off'
