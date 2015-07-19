@@ -1,5 +1,7 @@
 var Client = require('./client');
 var clientState = require('../lib/clientState');
+var stateStorage = require('../lib/stateStorage');
+
 
 function Group(group, poolClients) {
 
@@ -94,7 +96,7 @@ function Group(group, poolClients) {
         isAvailable: {
             enumerable: true,
             get: function () {
-                return (this.isUndefined && clients.length > 0) || !window.showSettings || clients.length > 0;
+                return (this.isUndefined && clients.length > 0 && stateStorage.show) || clients.length > 0;
             }
         }
     });
