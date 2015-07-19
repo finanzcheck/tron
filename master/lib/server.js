@@ -91,7 +91,7 @@ server.on('error', function (e) {
 
 module.exports = {
     /**
-     * @param {Function} cb
+     * @param {Function} [cb]
      */
     start: function (cb) {
         server.listen(protocolConfig.port, cb || noop);
