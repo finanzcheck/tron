@@ -131,7 +131,13 @@ module.exports = {
         try {
             var client = this.getClient(clientId, true);
             client.panicUrl = url;
-            cb(null, client);
+
+            if (client.up) {
+                protocol.requestSetPanicUrl(url, client.socket, cb);
+            }
+            else {
+                cb(null, client);
+            }
 
         } catch (e) {
             cb(e);

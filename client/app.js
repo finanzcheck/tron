@@ -122,6 +122,19 @@ var protocol = new Protocol({
          * @param {Object}     data
          * @param {net.Socket} con
          */
+        setPanicState: function (data, con) {
+            var self = this;
+
+            clientState.panicState = data.state;
+
+            self.respond(clientState.responseData({
+                token: data.token
+            }), con);
+        },
+        /**
+         * @param {Object}     data
+         * @param {net.Socket} con
+         */
         switchTV: function (data, con) {
             var self = this;
 
