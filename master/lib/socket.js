@@ -42,16 +42,6 @@ function Socket(server) {
             });
         });
 
-        socket.on(socketEvents.CLIENT_CHANGEPANICURL, function (data) {
-            debug([socketEvents.CLIENT_CHANGEPANICURL, data]);
-
-            serverService.changePanicUrl(data.panicUrl, data.id, function (err) {
-                if (err) {
-                    socketError({id: data.id, message: 'Error on changePanicUrl!'});
-                }
-            });
-        });
-
         socket.on(socketEvents.CLIENT_CHANGEPANICSTATE, function (data) {
             debug([socketEvents.CLIENT_CHANGEPANICSTATE, data]);
 
@@ -88,6 +78,16 @@ function Socket(server) {
             serverService.changeGroupTitle(data.title, data.id, function (err) {
                 if (err) {
                     socketError({id: data.id, message: 'Error on changeTitle!'});
+                }
+            });
+        });
+
+        socket.on(socketEvents.GROUP_CHANGEPANICURL, function (data) {
+            debug([socketEvents.GROUP_CHANGEPANICURL, data]);
+
+            serverService.changeGroupPanicUrl(data.panicUrl, data.id, function (err) {
+                if (err) {
+                    socketError({id: data.id, message: 'Error on changeGroupPanicUrl!'});
                 }
             });
         });

@@ -11,6 +11,8 @@ module.exports = {
     CLIENT_MOVED: 'client:moved',
     GROUP_CHANGETITLE: 'group:changetitle',
     GROUP_CHANGESCHEDULES: 'group:changeschedules',
+    GROUP_CHANGEPANICURL: 'group:changepanicurl',
+    GROUP_CHANGEPANICSTATE: 'group:changepanicstate',
     GROUP_ADD: 'group:new',
     ERROR: 'error'
 };

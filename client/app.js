@@ -4,8 +4,6 @@ var spawn = require('child_process').spawn;
 var exec = require('child_process').exec;
 var async = require('async');
 var client = new net.Socket();
-var chromeCtrl = require('chrome-remote-interface');
-var chromeInstance;
 var conf = require('config');
 var debug = require('debug')('client:app');
 var resolveCluster = require('./lib/mdnsClusterResolver');
@@ -22,6 +20,7 @@ var macAddress = require('./lib/macAddressResolver');
 var Protocol = require('../lib/protocol');
 var ServicePool = require('./lib/servicePool');
 var Client = require('../lib/client');
+var browser = require('./lib/browser');
 
 var clientState = new Client({
     id: macAddress,
@@ -29,21 +28,9 @@ var clientState = new Client({
 });
 
 clientState.on('needToNavigate', function (url) {
-    if (chromeInstance) {
-        chromeInstance.Page.navigate({
-            url: url
-        }, function (err) {
-            if (err) {
-                debug(err);
-            }
-            else {
-                clientState.emit('change');
-            }
-        });
-    }
-    else {
-        debug('Cannot connect to Chrome');
-    }
+    browser.navigate(url, function () {
+        clientState.emit('change');
+    });
 });
 clientState.on('needToSwitch', function (state) {
     gpio.write(conf.client.io.tv, state, function (err) {
@@ -197,26 +184,8 @@ async.waterfall([
     },
     // setup Chrome
     function (next) {
-        var args = conf.client.browser.args.concat([conf.client.browser.url]);
-        var chrome = spawn(conf.client.browser.path, args);
-
-        chrome.on('error', function (err) {
+        browser.init(conf.client.browser, function (err) {
             next(err);
-        });
-        chrome.on('close', function (code) {
-            console.log('child process exited with code ' + code);
-        });
-
-        // wait to let chrome start gracefully
-        setTimeout(next, conf.client.browser.startupGracePeriod);
-    },
-    // setup Chrome Protocol
-    function (next) {
-        chromeCtrl(function (chrome) {
-            chromeInstance = chrome;
-            next();
-        }).on('error', function () {
-            next('Init chrome failed');
         });
     },
     // start mdns Browser

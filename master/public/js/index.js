@@ -127,7 +127,7 @@ $.fn.findGroup = function () {
 $(function () {
     var $waiting = $('.clients-waiting');
 
-    window.addEventListener('hashchange', showClients, false);
+    $(window).on('hashchange', showClients);
 
     socket.on('connect', function () {
         socket.emit(socketEvents.CLIENTS_GET);
@@ -203,7 +203,7 @@ $(function () {
                             submitValues.id = item.value;
                             break;
                         case 'panicUrl':
-                            panicUrl = item.value;
+                            submitValues.panicUrl = item.value;
                             break;
                         case 'on':
                             submitValues.schedules.on.push(item.value);
@@ -215,13 +215,7 @@ $(function () {
                 }
             });
 
-            $clients.each(function () {
-                var $client = $(this);
-                var data = {id: $client.attr('client')};
-                data['panicUrl'] = panicUrl;
-                socket.emit(socketEvents.CLIENT_CHANGEPANICURL, data);
-            });
-
+            socket.emit(socketEvents.GROUP_CHANGEPANICURL, submitValues);
             socket.emit(socketEvents.GROUP_CHANGESCHEDULES, submitValues);
         })
         .on('click', '[data-action]', function (event) {
