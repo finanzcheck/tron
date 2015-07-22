@@ -1,6 +1,7 @@
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var interact = require('interact.js');
+var dragula = require('dragula');
 
 var droppedTarget;
 var _basket = [];
