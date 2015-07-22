@@ -59,6 +59,7 @@ if (process.env.NODE_ENV != 'production') {
     app.use(serve(require("./static-routes/less")));
 }
 
+app.use('/fonts', express.static(path.join(__dirname, '../node_modules/font-awesome/fonts')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
