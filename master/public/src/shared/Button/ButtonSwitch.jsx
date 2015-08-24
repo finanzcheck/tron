@@ -24,17 +24,15 @@ export default class ButtonSwitch extends Component {
      * @returns {XML}
      */
     render() {
-        if (!this.props.isActive) {
-            return <div className="btn-group">
-                <button type="button" disabled data-type="off" onClick={this.onPreventDefault.bind(this)} className="btn btn-lg btn-size client-state-off"><i className="fa fa-lg fa-fw fa-power-off"></i></button>
-                <button type="button" disabled data-type="on" onClick={this.onPreventDefault.bind(this)} className="btn btn-lg btn-size client-state-on"><i className="fa fa-lg fa-fw fa-power-off"></i></button>
-            </div>;
+        let props = {
+             onClick: this.onSwitchOff.bind(this)
+        };
+        if(!this.props.isActive){
+            props['disabled']= true
         }
-
-
         return <div className="btn-group">
-            <button type="button" data-type="off" onClick={this.onSwitchOff.bind(this)} className="btn btn-lg btn-size client-state-off"><i className="fa fa-lg fa-fw fa-power-off"></i></button>
-            <button type="button" data-type="on" onClick={this.onSwitchOn.bind(this)} className="btn btn-lg btn-size client-state-on"><i className="fa fa-lg fa-fw fa-power-off"></i></button>
+            <button type="button" {...props} data-type="off" className="btn btn-lg btn-size client-state-off"><i className="fa fa-lg fa-fw fa-power-off"></i></button>
+            <button type="button" {...props} data-type="on" className="btn btn-lg btn-size client-state-on"><i className="fa fa-lg fa-fw fa-power-off"></i></button>
         </div>;
     }
 }
