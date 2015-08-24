@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
-import socket from '../shared/Socket.js';
-import SocketEvents from '../shared/SocketEvents.js';
+import Socket from '../shared/Socket.js';
 
 const STATE_UNKNON = 'client-state client-state-undefined disabled btn';
 const STATE_OFF = 'client-state client-state-off btn';
@@ -33,10 +32,7 @@ export default class Client extends Component {
             client: STATE_PENDING
         });
 
-        socket.emit(SocketEvents.CLIENT_SWITCH, {
-            id: this.props.id,
-            state: !this.props.state
-        });
+        Socket.emitSwitchClient(this.props, !this.props.state);
     }
 
     render() {

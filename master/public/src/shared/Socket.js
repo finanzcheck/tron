@@ -1,11 +1,53 @@
 import SocketIo from 'socket.io-client';
-let full = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
-let socket;
+import SocketEvents from '../../../lib/socketEvents.js'
 
-export default (function () {
+let socket = (() => {
     if (socket == null) {
         let full = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
         socket = SocketIo(full);
     }
     return socket;
 })();
+
+/**
+ *
+ */
+export default class Socket {
+    /**
+     *
+     * @returns {*}
+     */
+    static getSocket() {
+        return socket;
+    }
+
+    static onConnect(cb) {
+        socket.on('connect', cb);
+    }
+
+    static onDisconnect(cb) {
+        socket.on('disconnect', cb);
+    }
+
+    static receiveClientsList(cb) {
+        socket.on(SocketEvents.CLIENTS_LIST, cb);
+    }
+
+    static emitGetClients() {
+        socket.emit(SocketEvents.CLIENTS_GET);
+    }
+
+    static emitSwitchClient(client, state) {
+        socket.emit(SocketEvents.CLIENT_SWITCH, {
+            id: client.id,
+            state: state
+        });
+    }
+
+    static emitChangeClientPanicState(client, state) {
+        socket.emit(SocketEvents.CLIENT_CHANGEPANICSTATE, {
+            id: client.id,
+            panicState: state
+        });
+    }
+}

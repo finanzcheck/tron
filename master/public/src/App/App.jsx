@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
-import socket from '../shared/Socket.js';
+import Socket from '../shared/Socket.js';
 
-import SocketEvents from '../shared/SocketEvents.js';
 import Header from '../shared/Header/Header.jsx';
 import Group from '../Group/Group.jsx';
 import ButtonSwitch from '../shared/Button/ButtonSwitch.jsx';
@@ -17,7 +16,7 @@ export default class App extends Component {
         };
 
         // recieve client list
-        socket.on(SocketEvents.CLIENTS_LIST, (pool)=> {
+        Socket.receiveClientsList((pool)=> {
             console.debug(pool);
             this.setState({
                 clients: pool.clients,
@@ -35,23 +34,20 @@ export default class App extends Component {
         });
 
         // recieve connect state
-        socket.on('connect', ()=> {
+        Socket.onConnect(()=> {
             this.setState({connected: true});
-            socket.emit(SocketEvents.CLIENTS_GET);
+            Socket.emitGetClients();
         });
 
         // recieve disconnect state
-        socket.on('disconnect', ()=> {
+        Socket.onDisconnect(()=> {
             this.setState({connected: false});
         });
     }
 
     onButtonSwitchChanged(value) {
         this.state.clients.forEach((client)=> {
-            socket.emit(SocketEvents.CLIENT_SWITCH, {
-                id: client.id,
-                state: value
-            });
+            Socket.emitSwitchClient(client, value);
         })
     }
 

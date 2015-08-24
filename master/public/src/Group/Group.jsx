@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import socket from '../shared/Socket.js';
+import Socket from '../shared/Socket.js';
 import SocketEvents from '../shared/SocketEvents.js';
 
 import Header from './GroupHeader.jsx';
@@ -15,19 +15,13 @@ export default class Group extends Component {
 
     onButtonSwitchChanged(value) {
         this.props.clients.forEach((client)=> {
-            socket.emit(SocketEvents.CLIENT_SWITCH, {
-                id: client.id,
-                state: value
-            });
+            Socket.emitSwitchClient(client, value);
         })
     }
 
     onPanicButtonChanged(value) {
         this.props.clients.forEach((client)=> {
-            socket.emit(SocketEvents.CLIENT_CHANGEPANICSTATE, {
-                id: client.id,
-                panicState: value
-            });
+            Socket.emitChangeClientPanicState(client, !this.state.paniceState)
         })
     }
 
