@@ -17,7 +17,6 @@ export default class App extends Component {
 
         // recieve client list
         Socket.receiveClientsList((pool)=> {
-            console.debug(pool);
             this.setState({
                 clients: pool.clients,
                 groups: pool.groups
