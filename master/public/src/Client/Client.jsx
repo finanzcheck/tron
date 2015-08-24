@@ -4,7 +4,7 @@ import Socket from '../shared/Socket.js';
 const STATE_UNKNON = 'client-state client-state-undefined disabled btn';
 const STATE_OFF = 'client-state client-state-off btn';
 const STATE_ON = 'client-state client-state-on btn';
-const STATE_PENDING = 'client-state client-state-pending active';
+const STATE_PENDING = 'client-state client-state-pending btn active';
 
 const STATE = [
     STATE_UNKNON, STATE_OFF, STATE_ON, STATE_PENDING
