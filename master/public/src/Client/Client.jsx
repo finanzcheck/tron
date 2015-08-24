@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Socket from '../shared/Socket.js';
+import InputText from '../Form/InputText.jsx';
 
 const STATE_UNKNON = 'client-state client-state-undefined disabled btn';
 const STATE_OFF = 'client-state client-state-off btn';
@@ -41,7 +42,8 @@ export default class Client extends Component {
                 <i className="fa fa-3x fa-fw fa-power-off"></i>
             </a>
             <span>
-                <span className="client-title">{this.props.title}</span>
+                <InputText className="client-title" value={this.props.title} />
+
                 <span className="client-url">{this.props.url}</span>
             </span>
             <span className="client-id">{this.props.id}</span>
