@@ -44,6 +44,13 @@ export default class Socket {
         socket.emit(SocketEvents.CLIENTS_GET);
     }
 
+    static emitGroupTitle(group, title) {
+        socket.emit(SocketEvents.GROUP_CHANGETITLE, {
+            id: group.id,
+            title: title
+        });
+    }
+
     static emitSwitchClient(client, state) {
         socket.emit(SocketEvents.CLIENT_SWITCH, {
             id: client.id,
@@ -51,10 +58,24 @@ export default class Socket {
         });
     }
 
-    static emitChangeClientPanicState(client, state) {
+    static emitClientPanicState(client, state) {
         socket.emit(SocketEvents.CLIENT_CHANGEPANICSTATE, {
             id: client.id,
             panicState: state
+        });
+    }
+
+    static emitClientTitle(client, title) {
+        socket.emit(SocketEvents.CLIENT_CHANGETITLE, {
+            id: client.id,
+            title: title
+        });
+    }
+
+    static emitClientUrl(client, url) {
+        socket.emit(SocketEvents.CLIENT_CHANGEURL, {
+            id: client.id,
+            url: url
         });
     }
 }

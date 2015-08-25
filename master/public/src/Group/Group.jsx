@@ -41,8 +41,12 @@ export default class Group extends Component {
     onPanicButtonChanged(value) {
 
         this.props.clients.forEach((client)=> {
-            Socket.emitChangeClientPanicState(client, !this.state.paniceState)
+            Socket.emitClientPanicState(client, !this.state.paniceState)
         })
+    }
+
+    handleChangedTitle(title){
+        Socket.emitGroupTitle(this.props, title);
     }
 
     render() {
@@ -50,7 +54,7 @@ export default class Group extends Component {
         console.debug(this.state);
 
         return <section className="panel panel-default clients clients-group">
-            <Header title={this.props.title}>
+            <Header title={this.props.title} onChanged={this.handleChangedTitle.bind(this)}>
                 <ButtonSwitch onChangedState={this.onButtonSwitchChanged.bind(this)} isActive={this.state.buttonSwitchIsActive}/>
                 <PanicButton panicState={this.state.panicState} onChangedState={this.onPanicButtonChanged.bind(this)}/>
             </Header>

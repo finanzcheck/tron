@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Socket from '../shared/Socket.js';
 import InputText from '../Form/InputText.jsx';
+import InputUrl from '../Form/InputIUrl.jsx';
 
 const STATE_UNKNON = 'client-state client-state-undefined disabled btn';
 const STATE_OFF = 'client-state client-state-off btn';
@@ -36,15 +37,26 @@ export default class Client extends Component {
         Socket.emitSwitchClient(this.props, !this.props.state);
     }
 
+    /**
+     *
+     * @param {String} title
+     */
+    handleTitleChange(title) {
+        Socket.emitClientTitle(this.props, title);
+    }
+
+    handleUrlChange(url){
+        Socket.emitClientUrl(this.props, url);
+    }
+
     render() {
         return <section className="client clients-list-item">
             <a href="#" onClick={this.onChangeState.bind(this)} className={this.state.client}>
                 <i className="fa fa-3x fa-fw fa-power-off"></i>
             </a>
             <span>
-                <InputText className="client-title" value={this.props.title} />
-
-                <span className="client-url">{this.props.url}</span>
+                <InputText onChanged={this.handleTitleChange.bind(this)} className="client-title" value={this.props.title}/>
+                <InputUrl onChanged={this.handleUrlChange.bind(this)} className="client-url" value={this.props.url}/>
             </span>
             <span className="client-id">{this.props.id}</span>
         </section>;
