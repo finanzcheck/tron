@@ -2,9 +2,16 @@ import SocketIo from 'socket.io-client';
 import SocketEvents from '../../../lib/socketEvents.js'
 
 let socket = (() => {
-    if (socket == null) {
+    if (socket == null && typeof document !== 'undefined') {
         let full = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
         socket = SocketIo(full);
+    } else {
+        socket = {
+            on: function () {
+            },
+            emit: function () {
+            }
+        }
     }
     return socket;
 })();

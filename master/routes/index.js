@@ -9,7 +9,14 @@ router.get('/', function (req, res, next) {
 
 /* GET home page with react. */
 router.get('/app', function (req, res, next) {
-    res.render('app', {title: 'TRON-APP', js: 'app'});
+    require('babel/register');
+
+    var React = require('react');
+    var App = require('../public/src/App/App.jsx');
+
+    var app = React.createElement(App);
+
+    res.render('app', {title: 'TRON-APP', js: 'app', content: React.renderToString(app)});
 });
 
 module.exports = router;

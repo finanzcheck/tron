@@ -1,4 +1,6 @@
 import React from 'react';
 import App from './App/App.jsx';
 
-React.render(<App title="Clients" roles=""></App>, document.body);
+let reactElement = document.querySelector('[data-reactid]');
+
+React.render(<App title="Clients" roles=""></App>, reactElement);

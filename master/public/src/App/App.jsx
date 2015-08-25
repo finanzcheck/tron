@@ -52,7 +52,7 @@ export default class App extends Component {
 
     render() {
         if (!this.state.connected) {
-            return <div>Not connected</div>;
+            return <div>It's not connected!</div>;
         } else if (this.state.connected && this.state.groups.length) {
             let groups = this.state.groups
                 .map((group)=> {
