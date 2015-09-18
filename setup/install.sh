@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-NODEJS_VERSION=2.3.0
+NODEJS_VERSION=0.12.7
 NUM_PROCS=$(nproc)
 UNAME_STR=$(uname)
 SCRIPT_PWD=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -10,7 +10,7 @@ if [[ "$UNAME_STR" == 'Linux' ]]; then
     sudo apt-get upgrade -y
     sudo apt-get install -y libcec-dev cec-utils libavahi-compat-libdnssd-dev
     # chromium environment
-    sudo apt-get install -y xterm matchbox chromium x11-xserver-utils ttf-mscorefonts-installer xwit sqlite3 libnss3
+    sudo apt-get install -y xterm matchbox chromium chromium-browser x11-xserver-utils ttf-mscorefonts-installer xwit sqlite3 libnss3
 
     sudo cp ${SCRIPT_PWD}/xinitrc /boot/xinitrc
     sudo cp ${SCRIPT_PWD}/rc.local /etc/rc.local
