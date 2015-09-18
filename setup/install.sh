@@ -38,7 +38,7 @@ if [[ "$UNAME_STR" == 'Linux' ]]; then
         CURRENT_PWD=$(pwd)
 
         cd /tmp
-        wget https://nodejs.org/dist/v${NODEJS_VERSION}/iojs-v${NODEJS_VERSION}.tar.gz
+        wget https://nodejs.org/dist/v${NODEJS_VERSION}/node-v${NODEJS_VERSION}.tar.gz
         tar xvfz node-v${NODEJS_VERSION}.tar.gz
         cd node-v${NODEJS_VERSION}/
         ./configure && make -j ${NUM_PROCS} 2> build.err | tee build.log && sudo make install
