@@ -33,7 +33,7 @@ if [[ "$UNAME_STR" == 'Linux' ]]; then
     if hash node 2>/dev/null; then
         echo "node found"
     else
-        echo "node not found…installing io.js"
+        echo "node not found…installing node.js"
 
         CURRENT_PWD=$(pwd)
 
@@ -53,7 +53,7 @@ elif [[ "$UNAME_STR" == 'Darwin' ]]; then
     if hash node 2>/dev/null; then
         echo "node found"
     else
-        echo "node not found…installing io.js"
+        echo "node not found…installing node.js"
         brew install iojs
     fi
 fi
