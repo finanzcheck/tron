@@ -54,7 +54,7 @@ elif [[ "$UNAME_STR" == 'Darwin' ]]; then
         echo "node found"
     else
         echo "node not found…installing node.js"
-        brew install iojs
+        brew install node
     fi
 fi
 
