@@ -1,7 +1,7 @@
 var os = require('os');
 // determine a mac address we may use to identify ourselves
 module.exports = (function (interfaces) {
-    var testInterfaces = ['eth0', 'en0', 'wlan0'],
+    var testInterfaces = ['eth0', 'eth1', 'en0', 'wlan0', 'wlan1'],
         mac = undefined;
 
     testInterfaces.forEach(function (name) {

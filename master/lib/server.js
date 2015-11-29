@@ -1,4 +1,5 @@
 var Q = require('q');
+var async = require('async');
 var os = require('os');
 var net = require('net');
 var mdns = require('mdns');
@@ -124,21 +125,26 @@ module.exports = {
     },
     /**
      * @param {String}   url
-     * @param {String}   clientId
+     * @param {String}   groupId
      * @param {Function} cb
      */
-    changePanicUrl: function (url, clientId, cb) {
+    changeGroupPanicUrl: function (url, groupId, cb) {
         try {
-            var client = this.getClient(clientId, true);
-            client.panicUrl = url;
+            var group = this.getGroup(groupId);
+            var clients = clientPool.getClientsByGroupId(groupId);
 
-            if (client.up) {
-                protocol.requestSetPanicUrl(url, client.socket, cb);
-            }
-            else {
-                cb(null, client);
-            }
+            group.panicUrl = url;
 
+            async.each(clients, function (client, done) {
+                client.panicUrl = url;
+
+                if (client.up) {
+                    protocol.requestSetPanicUrl(url, client.socket, done);
+                }
+                else {
+                    done(null);
+                }
+            }, cb);
         } catch (e) {
             cb(e);
         }
