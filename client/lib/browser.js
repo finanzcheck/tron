@@ -7,7 +7,30 @@ var chromeConnection;
 var chromeInstance;
 
 var params = {};
+var currentUrl;
 var initialized = false;
+
+function initChromeInstance(cb) {
+    chromeInstance = spawn(params.path, params.args.concat([params.url]));
+
+    chromeInstance.on('error', function (err) {
+        cb(err);
+    });
+    chromeInstance.on('close', function (code) {
+        logger.warn('Chrome instance exited with code ' + code);
+        initChromeInstance();
+    });
+    chromeInstance.stdout.on('data', function (data) {
+        logger.info(data.toString());
+    });
+
+    chromeInstance.stderr.on('data', function (data) {
+        logger.error(data.toString());
+    });
+
+    // wait to let chrome start gracefully
+    setTimeout(cb, params.startupGracePeriod);
+}
 
 module.exports = {
     isInitialized: function () {
@@ -18,27 +41,13 @@ module.exports = {
 
         if (!initialized) {
             params = options || {};
+            currentUrl = params.url;
 
             async.waterfall([
                 function (next) {
-                    chromeInstance = spawn(params.path, params.args.concat([params.url]));
-
-                    chromeInstance.on('error', function (err) {
+                    initChromeInstance(function (err) {
                         next(err);
                     });
-                    chromeInstance.on('close', function (code) {
-                        logger.warn('child process exited with code ' + code);
-                    });
-                    chromeInstance.stdout.on('data', function (data) {
-                        logger.info(data.toString());
-                    });
-
-                    chromeInstance.stderr.on('data', function (data) {
-                        logger.error(data.toString());
-                    });
-
-                    // wait to let chrome start gracefully
-                    setTimeout(next, params.startupGracePeriod);
                 },
                 // setup Chrome Protocol
                 function (next) {
@@ -81,3 +90,24 @@ module.exports = {
         }
     }
 };
+
+function exitHandler(options, err) {
+    if (options.cleanup) {
+        console.log('clean');
+    }
+    if (err) {
+        console.log(err.stack);
+    }
+    if (options.exit) {
+        process.exit();
+    }
+}
+
+//do something when app is closing
+process.on('exit', exitHandler);
+
+//catches ctrl+c event
+process.on('SIGINT', exitHandler);
+
+//catches uncaught exceptions
+process.on('uncaughtException', exitHandler);

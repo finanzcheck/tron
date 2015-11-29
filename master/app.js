@@ -1,6 +1,5 @@
 var express = require('express');
 var hbs = require('hbs');
-//var browserify = require('browserify-middleware');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -54,9 +53,9 @@ app.use(cookieParser());
 //app.use('/js', browserify(path.join(__dirname, 'public/js')));
 
 if (process.env.NODE_ENV != 'production') {
-    var serve = require("staticr/serve");
-    app.use(serve(require("./static-routes/browserify")));
-    app.use(serve(require("./static-routes/less")));
+    var serve = require('staticr/serve');
+    app.use(serve(require('./static-routes/browserify')));
+    app.use(serve(require('./static-routes/less')));
 }
 
 app.use('/fonts', express.static(path.join(__dirname, '../node_modules/font-awesome/fonts')));
@@ -70,7 +69,6 @@ app.use(function (req, res, next) {
     err.status = 404;
     next(err);
 });
-
 
 // error handlers
 
