@@ -16,10 +16,9 @@ module.exports = (function (interfaces) {
             if (carry) {
                 return carry;
             }
-            else {
-                return interfaces[current].reduce(function (carry, current) {
-                    return carry || true === current.internal ? undefined : current.mac;
-                }, undefined);
-            }
+
+            return interfaces[current].reduce(function (carry, current) {
+                return carry || (false === current.internal ? current.mac : undefined);
+            }, undefined);
         }, undefined);
 })(os.networkInterfaces());
