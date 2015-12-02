@@ -106,7 +106,8 @@ function showClients() {
 
 var validate = {
     url: function (value) {
-        return value.match(/^(ht|f)tps?:\/\/[a-z0-9-\.]+\.[a-z]{2,4}\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/) !== null;
+        //return value.match(/^(ht|f)tps?:\/\/[a-z0-9-\.]+\.[a-z]{2,4}\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/) !== null;
+        return value.match(/.*/) !== null;
     },
     cron: function (value) {
         try {
