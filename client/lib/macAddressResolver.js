@@ -12,7 +12,7 @@ module.exports = (function (interfaces) {
         }
     });
 
-    return mac || Object.keys(interfaces).reduce(function (carry, current) {
+    return mac || Object.keys(interfaces).sort().reduce(function (carry, current) {
             if (carry) {
                 return carry;
             }
