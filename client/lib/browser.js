@@ -11,7 +11,13 @@ var currentUrl;
 var initialized = false;
 
 function initChromeInstance(cb) {
-    chromeInstance = spawn(params.path, params.args.concat([params.url]));
+    // launch Chrome with lower privileges if we are running as root
+    var options = {
+        gid: process.env.SUDO_GID ? parseInt(process.env.SUDO_GID) : undefined,
+        uid: process.env.SUDO_UID ? parseInt(process.env.SUDO_UID) : undefined
+    };
+
+    chromeInstance = spawn(params.path, params.args.concat([params.url]), options);
 
     chromeInstance.on('error', function (err) {
         cb(err);
