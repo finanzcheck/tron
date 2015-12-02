@@ -96,7 +96,7 @@ function Group(group, poolClients) {
         isAvailable: {
             enumerable: true,
             get: function () {
-                return (this.id === this.title) || (this.isUndefined && clients.length > 0 && stateStorage.show) || clients.length > 0;
+                return stateStorage.editable || (this.isUndefined && clients.length > 0 && stateStorage.show) || clients.length > 0;
             }
         }
     });
