@@ -1,5 +1,5 @@
 
-var hogan = require("hogan");
+var hogan = require("hogan.js");
 
 var str =
 '<li class="clients-list-item client" {{^up}}disabled{{/up}} client="{{id}}">\

@@ -1,4 +1,4 @@
-var hogan = require("hogan");
+var hogan = require("hogan.js");
 
 var str =
     '<div class="heading"> \
